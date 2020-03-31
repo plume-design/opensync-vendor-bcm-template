@@ -15,7 +15,7 @@
 
 
 #define TARGET_CERT_PATH            "/var/certs"
-#define TARGET_MANAGERS_PID_PATH    "/var/run/plume"
+#define TARGET_MANAGERS_PID_PATH    "/var/run/opensync"
 #define TARGET_OVSDB_SOCK_PATH      "/var/run/db.sock"
 #define TARGET_LOGREAD_FILENAME     "/var/log/messages"
 
@@ -24,7 +24,7 @@
  *  MANAGERS definitions
  *****************************************************************************/
 #if !defined(CONFIG_TARGET_MANAGER)
-#define TARGET_MANAGER_PATH(X)      "/usr/plume/bin/"X
+#define TARGET_MANAGER_PATH(X)      CONFIG_INSTALL_PREFIX"/bin/"X
 #endif
 
 /******************************************************************************

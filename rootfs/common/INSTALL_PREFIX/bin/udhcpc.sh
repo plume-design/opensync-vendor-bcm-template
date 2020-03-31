@@ -1,4 +1,7 @@
 #!/bin/sh
+# {# jinja-parse #}
+INSTALL_PREFIX={{INSTALL_PREFIX}}
+
 [ -z "$1" ] && echo "Error: should be run by udhcpc" && exit 1
 
 OPTS_FILE=/var/run/udhcpc_$interface.opts
@@ -78,7 +81,7 @@ case "$1" in
 esac
 
 # custom scripts
-for x in /usr/plume/scripts/udhcpc.d/[0-9]*
+for x in ${INSTALL_PREFIX}/scripts/udhcpc.d/[0-9]*
 do
     [ ! -x "$x" ] && continue
     # Execute custom scripts

@@ -1,4 +1,6 @@
 #!/bin/sh
+# {# jinja-parse #}
+INSTALL_PREFIX={{INSTALL_PREFIX}}
 
 gre_filter()
 {
@@ -26,7 +28,7 @@ gre_purge()
 ls /sys/class/net
 
 # save NOP list
-/usr/plume/bin/nol.sh save
+${INSTALL_PREFIX}/bin/nol.sh save
 
 # NM/WM/SM can interact with wifi driver therefore
 # nas and epad must be killed afterwards to

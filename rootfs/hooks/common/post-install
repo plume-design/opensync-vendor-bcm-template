@@ -18,7 +18,7 @@ mkdir -p ${ROOTFS}/root
 ##
 # Version
 #
-ln -sf usr/plume/.version ${ROOTFS}/.version
+ln -sf "${INSTALL_PREFIX:1}/.version" "${ROOTFS}/.version"
 
 ##
 # System services

@@ -1,10 +1,12 @@
 #!/bin/sh
+# {# jinja-parse #}
+INSTALL_PREFIX={{INSTALL_PREFIX}}
 
 START=60
 
 start()
 {
-    /usr/plume/bin/iptables_cmd.sh boot
+    ${INSTALL_PREFIX}/bin/iptables_cmd.sh boot
 }
 
 

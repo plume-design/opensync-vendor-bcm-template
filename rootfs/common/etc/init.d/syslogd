@@ -1,10 +1,12 @@
 #!/bin/sh
 
+export PATH="/opt/sbin:/opt/bin:/usr/sbin:/sbin:/usr/bin:/bin/:$PATH"
+
 start()
 {
-    echo "Starting syslogd ..."
-    /opt/sbin/syslogd -s 1024 -O /var/log/messages -S -b 1
-    /opt/sbin/klogd
+    echo "Starting syslogd $(which syslogd) and klogd $(which klogd) ..."
+    syslogd -s 1024 -O /var/log/messages -S -b 1
+    klogd
 }
 
 stop()

@@ -1,4 +1,6 @@
 #!/bin/sh
+# {# jinja-parse #}
+INSTALL_PREFIX={{INSTALL_PREFIX}}
 
 enable_ip_forward()
 {
@@ -11,14 +13,14 @@ start()
     enable_ip_forward
 
     # Start OpenSync
-    /usr/plume/bin/start.sh 2>&1 | logger -t start.sh
-    start-stop-daemon -S -b -p /var/run/dm.pid -x /usr/plume/bin/dm
+    ${INSTALL_PREFIX}/bin/start.sh 2>&1 | logger -t start.sh
+    start-stop-daemon -S -b -p /var/run/dm.pid -x ${INSTALL_PREFIX}/bin/dm
 }
 
 stop()
 {
     # Stop OpenSync
-    /usr/plume/bin/stop.sh 2>&1 | logger -t stop.sh
+    ${INSTALL_PREFIX}/bin/stop.sh 2>&1 | logger -t stop.sh
 }
 
 

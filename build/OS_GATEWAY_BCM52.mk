@@ -1,9 +1,7 @@
 ##
 # SDK dependent build time defines
 #
-BCM_FSBUILD_DIR := ../sdk/bcm-52/targets/$(TARGET)/fs.build/
-BRCMDRIVERS_DIR := ../sdk/bcm-52/bcmdrivers/
-DRIVER_VERSION  := impl32
+DRIVER_VERSION := impl$(shell grep BCM_WLIMPL= $(PROFILE_DIR)/$(shell basename $(PROFILE_DIR)) | cut -d= -f2)
 
 SDK_INCLUDES += -I$(BCM_FSBUILD_DIR)/public/include
 SDK_INCLUDES += -I$(BCM_FSBUILD_DIR)/gpl/include

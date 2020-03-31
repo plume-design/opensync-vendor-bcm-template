@@ -76,6 +76,8 @@ ENV PATH="/projects/hnd/tools/linux/:${PATH}"
 # Install cmake (for building odhcp6c)
 RUN $PKGINSTALL cmake
 
+RUN pip3 install Jinja2
+
 # Broadcom buildsystem requires bash as /bin/sh.
 # This must be last docker step to avoid confusing
 # the system in case it assumes non-bash shell

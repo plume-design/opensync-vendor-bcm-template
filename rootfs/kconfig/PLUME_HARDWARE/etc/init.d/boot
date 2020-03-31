@@ -44,6 +44,9 @@ mount_overlay()
 
 start()
 {
+    echo Growing tmpfs on /var and /mnt for image flashing etc
+    mount -o rw,remount,size=25% /var
+    mount -o rw,remount,size=25% /mnt
     mount_overlay
 
     # Enable panic on OOM
@@ -61,6 +64,18 @@ start()
     touch /tmp/resolv.conf
     ln -sf /tmp/resolv.conf /etc/resolv.conf
     [ "$FAILSAFE" = "true" ] && touch /tmp/.failsafe
+
+
+    # for some reason module dependencies are whacked
+    # this is required for openvswitch and iptables
+    # to function properly
+    modprobe nf_conntrack_ipv4
+    modprobe nf_conntrack_ipv6
+    modprobe nf_conntrack_netlink
+    modprobe nf_nat_ipv4
+    modprobe nf_nat_ipv6
+    modprobe xt_state
+
 }
 
 stop()

@@ -15,10 +15,10 @@ reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 1.4.1    | public  |
-    | OpenSync vendor/bcm-template | 1.4.1    | public  |
-    | OpenSync platform/bcm        | 1.4.1    | public  |
-    | BCM SDK                      | 5.02L.05 | private |
+    | OpenSync core                | 2.0.0    | public  |
+    | OpenSync vendor/bcm-template | 2.0.0    | public  |
+    | OpenSync platform/bcm        | 2.0.0    | public  |
+    | BCM SDK                      | 5.02L.07 | private |
 
 
 #### Plume reference device information
@@ -85,6 +85,8 @@ OPENSYNC_ROOT
 │   └── work
 ├── platform
 │   └── bcm
+├── service-provider
+│   └── ...
 └── vendor
     └── bcm-template
 ```
@@ -127,7 +129,7 @@ cp -fr vendor/bcm-template/docker $SDK_ROOT/
 $ tar xzvf opensync-sdk-bcm52-*.tar.gz -C $SDK_ROOT/userspace
 ```
 
-NOTE: Provided information is based on BCM SDK `5.02L.05`. In case you are
+NOTE: Provided information is based on BCM SDK `5.02L.07`. In case you are
 using some other BCM SDK version, these steps can be used as a general guidance,
 but may require some modifications.
 
@@ -138,7 +140,7 @@ Build environment
 For build environment requirements see `docker/Dockerfile`, which is used to
 create the build environment and run builds in a docker container.
 
-Note that the Dockerfile is tailored for BCM SDK `5.02L.05` and may require some
+Note that the Dockerfile is tailored for BCM SDK `5.02L.07` and may require some
 modifications in case some other BCM SDK version is used.
 
 

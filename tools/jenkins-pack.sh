@@ -5,6 +5,7 @@
 
 TARGET="$2"
 BUILD_NO="$3"
+SDK_DIR="$4"
 
 VERSION="${TARGET}-$(cat vendor/bcm-template/.version)-${BUILD_NO}"
 DST_DIR="$(pwd)/images"
@@ -27,7 +28,23 @@ gitarchive()
 }
 
 ##
-# Here we are are packing git commit hashes and archive of used repos.
+# Packs BCM SDK patches.
+#
+pack_bcm_sdk_patches()
+{
+    local name="${DST_DIR}/opensync-bcm-5.02L.07p1-overlay-${VERSION}.tar.gz"
+
+    files=$(cd ${SDK_DIR}/contrib; find \
+        patches/ \
+        files/plume/userspace \
+        files/plume/hostTools \
+        -maxdepth 1)
+
+    (cd "${SDK_DIR}/contrib"; echo "${files}" | tar czvf ${name} -T -)
+}
+
+##
+# Packs git commit hashes and archives of used repos.
 #
 pack_opensync_repos()
 {
@@ -54,7 +71,11 @@ case $1 in
     opensync-repos)
         pack_opensync_repos
         ;;
+    bcm-sdk-patches)
+        pack_bcm_sdk_patches
+        ;;
     all)
         pack_opensync_repos
+        pack_bcm_sdk_patches
         ;;
 esac

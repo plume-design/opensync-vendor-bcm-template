@@ -1,5 +1,7 @@
 #!/bin/sh
+# {# jinja-parse #}
 
+INSTALL_PREFIX={{INSTALL_PREFIX}}
 OVSDB_SERVER_PID="/var/run/openvswitch/ovsdb-server.pid"
 OVS_VSWITCHD_PID="/var/run/openvswitch/ovs-vswitchd.pid"
 
@@ -18,7 +20,7 @@ start()
     insmod /opt/modules/openvswitch/openvswitch.ko
 
     # copy pre-populated db conf.db to ramdisk
-    cp /usr/plume/etc/conf.db.bck /tmp/etc/openvswitch/conf.db
+    cp ${INSTALL_PREFIX}/etc/conf.db.bck /tmp/etc/openvswitch/conf.db
 
     # ovsdb-server start against non-persistent DB
     # Use the default PID file otherwise we break commands such as ovs-appctl

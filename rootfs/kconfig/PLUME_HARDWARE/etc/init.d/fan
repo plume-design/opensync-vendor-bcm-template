@@ -1,13 +1,16 @@
 #!/bin/sh
+# {# jinja-parse #}
 #
 # OpenSync reference board specifics
 #
+
+INSTALL_PREFIX={{INSTALL_PREFIX}}
 
 START=60
 
 start()
 {
-    /usr/plume/bin/fan.sh | logger -t FAN
+    ${INSTALL_PREFIX}/bin/fan.sh | logger -t FAN
 }
 
 case "$1" in

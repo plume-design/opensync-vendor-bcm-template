@@ -19,7 +19,6 @@
 #include "bcm_bsal.h"
 
 static struct ev_loop *_ev_loop = NULL;
-static const char *ifnames[] = { "wl0", "wl1", "br-home", NULL };
 
 int target_bsal_init(
         bsal_event_cb_t callback,
@@ -28,7 +27,7 @@ int target_bsal_init(
     bool res;
 
     /* TODO: Add multiple ifaces */
-    res = bcm_bsal_init(loop, ifnames, callback);
+    res = bcm_bsal_init(loop, callback);
     if (res) {
         _ev_loop = loop;
     }
@@ -40,7 +39,7 @@ int target_bsal_cleanup(void)
 {
     bool res;
 
-    res = bcm_bsal_finalize(_ev_loop, ifnames);
+    res = bcm_bsal_finalize(_ev_loop);
     _ev_loop = NULL;
 
     return (res ? 0 : -1);

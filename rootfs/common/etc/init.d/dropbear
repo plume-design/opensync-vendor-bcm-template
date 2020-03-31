@@ -18,8 +18,8 @@ keygen()
         key=dropbear/dropbear_${keytype}_host_key
         [ -f /tmp/$key -o -s /etc/$key ] || {
             # generate missing keys
-            [ -x /usr/bin/dropbearkey ] && {
-                /usr/bin/dropbearkey -t $keytype -f /tmp/$key
+            [ -x /bin/dropbearkey ] && {
+                /bin/dropbearkey -t $keytype -f /tmp/$key
             }
         }
     done
