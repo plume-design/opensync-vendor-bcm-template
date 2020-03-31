@@ -1,0 +1,45 @@
+#!/bin/sh
+
+if [ $# -ne 1 ];
+then
+    echo "Usage: `basename $0` <rootfs-path>"
+    exit 1
+fi
+
+ROOTFS=$1
+
+echo "###### post-install ${ROOTFS} #######"
+
+mkdir -p ${ROOTFS}/overlay
+mkdir -p ${ROOTFS}/rom
+mkdir -p ${ROOTFS}/rootfs_data
+mkdir -p ${ROOTFS}/root
+
+##
+# Version
+#
+ln -sf usr/plume/.version ${ROOTFS}/.version
+
+##
+# System services
+#
+ln -sf ../init.d/boot ${ROOTFS}/etc/rc3.d/S26boot
+ln -sf ../init.d/boot ${ROOTFS}/etc/rc3.d/K26boot
+ln -sf ../init.d/syslogd ${ROOTFS}/etc/rc3.d/S28syslogd
+ln -sf ../init.d/htpdate ${ROOTFS}/etc/rc3.d/S49htpdate
+ln -sf ../init.d/debugnet ${ROOTFS}/etc/rc3.d/S50debugnet
+ln -sf ../init.d/dropbear ${ROOTFS}/etc/rc3.d/S51dropbear
+ln -sf ../init.d/firewall ${ROOTFS}/etc/rc3.d/S60firewall
+ln -sf ../init.d/fan ${ROOTFS}/etc/rc3.d/S60fan
+ln -sf ../init.d/bcreset ${ROOTFS}/etc/rc3.d/S962bcreset
+
+##
+# BCM
+#
+ln -sf ../init.d/bcm_perf_boost ${ROOTFS}/etc/rc3.d/S48bcm_perf_boost
+
+##
+# OpenSync
+#
+ln -sf ../init.d/openvswitch ${ROOTFS}/etc/rc3.d/S90openvswitch
+ln -sf ../init.d/opensync ${ROOTFS}/etc/rc3.d/S99opensync

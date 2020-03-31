@@ -1,0 +1,33 @@
+#!/bin/sh
+
+start()
+{
+    echo "Starting syslogd ..."
+    /opt/sbin/syslogd -s 1024 -O /var/log/messages -S -b 1
+    /opt/sbin/klogd
+}
+
+stop()
+{
+    echo "Stopping syslogd ..."
+    killall syslogd
+    killall klogd
+}
+
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    stop)
+        stop
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

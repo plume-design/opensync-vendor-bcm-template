@@ -1,0 +1,68 @@
+#!/bin/sh
+
+OVSDB_SERVER_PID="/var/run/openvswitch/ovsdb-server.pid"
+OVS_VSWITCHD_PID="/var/run/openvswitch/ovs-vswitchd.pid"
+
+start()
+{
+    echo "Starting openvswitch ..."
+
+    [ -x /var/run/openvswitch ] || mkdir -p /var/run/openvswitch
+
+    # create ramdisk folder for non-persistent ovsdb DB
+    [ -x /tmp/etc/openvswitch ] || mkdir -p /tmp/etc/openvswitch
+
+    # insert ovs kernel module
+    modprobe nf_nat_ipv4
+    modprobe nf_nat_ipv6
+    insmod /opt/modules/openvswitch/openvswitch.ko
+
+    # copy pre-populated db conf.db to ramdisk
+    cp /usr/plume/etc/conf.db.bck /tmp/etc/openvswitch/conf.db
+
+    # ovsdb-server start against non-persistent DB
+    # Use the default PID file otherwise we break commands such as ovs-appctl
+    start-stop-daemon -S -b -x /bin/ovsdb-server -- \
+        --remote=punix:/var/run/db.sock \
+        --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
+        --private-key=db:Open_vSwitch,SSL,private_key \
+        --certificate=db:Open_vSwitch,SSL,certificate \
+        --ca-cert=db:Open_vSwitch,SSL,ca_cert \
+        --pidfile \
+        /tmp/etc/openvswitch/conf.db
+    ln -sf /var/run/db.sock /var/run/openvswitch/db.sock
+
+    # ovs-vswitchd
+    start-stop-daemon -S -b -x /bin/ovs-vswitchd -- --pidfile
+}
+
+
+stop()
+{
+    echo "Stopping openvswitch ..."
+
+    for BR in $(ovs-vsctl list-br)
+    do
+        ovs-vscdtl del-br $BR
+    done
+    start-stop-daemon -K -p "${OVSDB_SERVER_PID}"
+    start-stop-daemon -K -p "${OVS_VSWITCHD_PID}"
+}
+
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    stop)
+        stop
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

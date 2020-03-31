@@ -1,0 +1,26 @@
+#!/bin/sh
+
+START=60
+
+start()
+{
+    /usr/plume/bin/iptables_cmd.sh boot
+}
+
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    stop)
+        echo "Stopping firewall not implemented ..."
+        exit 1
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

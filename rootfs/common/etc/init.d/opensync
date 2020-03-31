@@ -1,0 +1,46 @@
+#!/bin/sh
+
+enable_ip_forward()
+{
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+}
+
+start()
+{
+    # System setup
+    enable_ip_forward
+
+    # Start OpenSync
+    /usr/plume/bin/start.sh 2>&1 | logger -t start.sh
+    start-stop-daemon -S -b -p /var/run/dm.pid -x /usr/plume/bin/dm
+}
+
+stop()
+{
+    # Stop OpenSync
+    /usr/plume/bin/stop.sh 2>&1 | logger -t stop.sh
+}
+
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    stop)
+        stop
+        exit 0
+        ;;
+
+    restart)
+        stop
+        start
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

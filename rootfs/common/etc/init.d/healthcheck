@@ -1,0 +1,29 @@
+#!/bin/sh
+
+start()
+{
+    # NO-OP
+}
+
+stop()
+{
+    # NO-OP
+}
+
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    stop)
+        stop
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

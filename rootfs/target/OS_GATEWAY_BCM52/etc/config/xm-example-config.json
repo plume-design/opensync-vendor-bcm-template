@@ -1,0 +1,34 @@
+{
+ "node": {
+  "serial": "OSGXXXXXXXXXXXX",
+  "mode": "cloud",
+  "redirector": "ssl:wildfire.plume.tech:443",
+  "revision": "1.0",
+  "model": "PP302Z-GW",
+  "version": "1.0"
+ },
+ "wifi": [
+  {
+   "if_name": "wl0",
+   "vif": [
+    {
+     "if_name": "wl0.2",
+     "ssid": "OpenSyncAcademyBCM",
+     "psk": "opensync1234",
+     "enabled": "true"
+    }
+   ]
+  },
+  {
+   "if_name": "wl1",
+   "vif": [
+    {
+     "if_name": "wl1.2",
+     "ssid": "OpenSyncAcademyBCM",
+     "psk": "opensync1234",
+     "enabled": "true"
+    }
+   ]
+  }
+ ]
+}

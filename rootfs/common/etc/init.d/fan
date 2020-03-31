@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# OpenSync reference board specifics
+#
+
+START=60
+
+start()
+{
+    /usr/plume/bin/fan.sh | logger -t FAN
+}
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    stop)
+        echo "Stopping fan not implemented ..."
+        exit 1
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,80 @@
+#!/bin/sh
+
+#START=51
+#STOP=51
+
+NAME=dropbear
+DAEMON="/bin/dropbear"
+DAEMON_OPTS=""
+
+SERVICE_PID_FILE="/var/run/${NAME}.pid"
+
+keygen()
+{
+    mkdir -p /tmp/dropbear
+
+    for keytype in rsa; do
+        # check for keys
+        key=dropbear/dropbear_${keytype}_host_key
+        [ -f /tmp/$key -o -s /etc/$key ] || {
+            # generate missing keys
+            [ -x /usr/bin/dropbearkey ] && {
+                /usr/bin/dropbearkey -t $keytype -f /tmp/$key
+            }
+        }
+    done
+
+    mkdir -p /etc/dropbear
+    mv /tmp/dropbear/dropbear_* /etc/dropbear/
+    chown root /etc/dropbear
+    chmod 0700 /etc/dropbear
+}
+
+start()
+{
+    echo -n "Starting daemon: "$NAME
+    [ -s /etc/dropbear/dropbear_rsa_host_key ] || keygen
+    start-stop-daemon -S -q -b -p $SERVICE_PID_FILE -x $DAEMON -- $DAEMON_OPTS
+    echo "."
+}
+
+stop()
+{
+    echo -n "Stopping daemon: "$NAME
+    start-stop-daemon -K -q -p $SERVICE_PID_FILE
+    echo "."
+
+    if [ -e "${SERVICE_PID_FILE}" ]
+    then
+        local pid=$(cat ${SERVICE_PID_FILE})
+        kill $pid || kill -9 $pid
+        rm -f ${PID_FILE}
+    fi
+}
+
+restart()
+{
+    echo -n "Restarting daemon: "$NAME
+    start-stop-daemon -K -q -p $SERVICE_PID_FILE
+    start-stop-daemon -S -q -b -p $SERVICE_PID_FILE -x $DAEMON -- $DAEMON_OPTS
+    echo "."
+}
+
+
+case "$1" in
+    start)
+        start
+        ;;
+
+    stop)
+        stop
+        ;;
+
+    restart)
+        restart
+        ;;
+
+    *)
+        echo "Usage: "$1" {start|stop|restart}"
+        exit 1
+esac
