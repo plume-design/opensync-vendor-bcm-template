@@ -28,9 +28,8 @@ ifeq ($(OS_ONBOARDING_SSID),)
 $(error TARGET=$(TARGET): Please provide OS_ONBOARDING_SSID)
 endif
 
-endif
-
 export OS_ONBOARDING_PSK=$(OS_ONBOARDING_PSK)
 export OS_ONBOARDING_SSID=$(OS_ONBOARDING_SSID)
 
+endif
 endif
