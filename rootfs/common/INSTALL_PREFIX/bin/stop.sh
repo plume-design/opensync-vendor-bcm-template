@@ -34,7 +34,7 @@ ${INSTALL_PREFIX}/bin/nol.sh save
 # nas and epad must be killed afterwards to
 # avoid races and unexpected driver sequences.
 echo "killing managers"
-killall -s SIGKILL dm cm nm wm lm sm bm um om qm fsm
+killall -s SIGKILL dm cm nm wm lm sm bm um om qm fsm fcm
 
 # From this point on CM is dead and no one is kicking
 # watchdog.  There's less than 60s to complete everything
