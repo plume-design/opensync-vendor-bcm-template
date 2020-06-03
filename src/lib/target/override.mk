@@ -20,9 +20,6 @@ UNIT_DEPS += platform/bcm/src/lib/bcm_bsal
 # Target layer sources
 #
 UNIT_SRC_TOP += $(OVERRIDE_DIR)/src/target_$(TARGET).c
-UNIT_SRC_TOP += $(OVERRIDE_DIR)/src/target_wifi.c
-UNIT_SRC_TOP += $(OVERRIDE_DIR)/src/target_stats.c
-UNIT_SRC_TOP += $(OVERRIDE_DIR)/src/target_bsal.c
 
 endif
 
