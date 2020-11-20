@@ -1,4 +1,4 @@
-OpenSync BCM template
+OpenSync BCM Template
 =====================
 
 Reference/template BCM vendor layer implementation provides support for reference
@@ -15,9 +15,9 @@ reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 2.0.0    | public  |
-    | OpenSync vendor/bcm-template | 2.0.0    | public  |
-    | OpenSync platform/bcm        | 2.0.0    | public  |
+    | OpenSync core                | 2.0.x    | public  |
+    | OpenSync vendor/bcm-template | 2.0.x    | public  |
+    | OpenSync platform/bcm        | 2.0.x    | public  |
     | BCM SDK                      | 5.02L.07 | private |
 
 
@@ -58,7 +58,7 @@ Follow these steps to populate the OPENSYNC_ROOT directory:
 ```
 $ git clone https://github.com/plume-design/opensync.git OPENSYNC_ROOT/core
 $ git clone https://github.com/plume-design/opensync-platform-bcm.git OPENSYNC_ROOT/platform/bcm
-$ git clone https://github.com/plume-design/opensync-vendor-bcm.git OPENSYNC_ROOT/vendor/bcm
+$ git clone https://github.com/plume-design/opensync-vendor-bcm-template.git OPENSYNC_ROOT/vendor/bcm-template
 $ mkdir -p OPENSYNC_ROOT/3rdparty
 $ mkdir -p OPENSYNC_ROOT/service-provider
 ```

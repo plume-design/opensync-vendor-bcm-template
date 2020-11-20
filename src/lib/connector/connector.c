@@ -157,6 +157,7 @@ static bool connector_wifi_config_get(
                     SCHEMA_KEY_VAL_APPEND(vconf.security, "encryption", "WPA-PSK");
                     SCHEMA_KEY_VAL_APPEND(vconf.security, "mode", "2");
 
+                    // Process general device info
                     jvif_value = json_object_get(jvif, "psk");
                     if (jvif_value && json_is_string(jvif_value))
                     {
@@ -171,7 +172,7 @@ static bool connector_wifi_config_get(
                         {
                             // Update OVS VIF
                             SCHEMA_SET_INT(vconf.enabled, true);
-                            api->connector_vif_update_cb(&vconf, rconf.if_name);
+                            (api->connector_vif_update_cb)(&vconf, rconf.if_name);
                         }
                     }
                 }
@@ -350,6 +351,7 @@ bool connector_sync_vif(const struct schema_Wifi_VIF_Config *vconf)
                         json_string_set(jvif_value, vconf->ssid);
                     }
 
+                    // Process general device info
                     jvif_value = json_object_get(jvif, "psk");
                     if (jvif_value && json_is_string(jvif_value))
                     {
@@ -383,7 +385,7 @@ error:
 bool connector_sync_inet(const struct schema_Wifi_Inet_Config *iconf)
 {
     /*
-     * You can go over all inet settings or process just _changed flagsto populate your DB
+     * You can go over all inet settings or process just _changed flags to populate your DB
      * Example: if (inet->inet_addr_changed) set_new_ipl(inet->inet_addr);
      */
     return true;
