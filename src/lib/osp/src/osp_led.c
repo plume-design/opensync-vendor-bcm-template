@@ -1,5 +1,6 @@
 #include "log.h"
-#include "osp.h"
+#include "osp_led.h"
+
 
 int osp_led_init(int *led_cnt)
 {
@@ -30,4 +31,3 @@ int osp_led_get_state(enum osp_led_state *state, uint32_t *priority)
     LOGW("osp_led: Dummy implementation of %s", __func__);
     return 0;
 }
-

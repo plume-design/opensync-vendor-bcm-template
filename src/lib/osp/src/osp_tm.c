@@ -1,7 +1,7 @@
 #include "log.h"
-#include "osp.h"
-#include "osp_tm.h"
 #include "const.h"
+#include "osp_tm.h"
+
 
 static const char *pm_tm_temp_srcs[] =
 {
@@ -31,6 +31,7 @@ int osp_tm_init(
 
     return 0;
 }
+
 void osp_tm_deinit(void *priv)
 {
     LOGN("osp_tm: Dummy implementation of %s", __func__);
@@ -59,4 +60,3 @@ int osp_tm_set_fan_rpm(void *priv, unsigned int rpm)
     LOGN("osp_tm: Dummy implementation of %s", __func__);
     return 0;
 }
-
