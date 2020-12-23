@@ -19,7 +19,8 @@ PLATFORM            := bcm
 VENDOR              := bcm-template
 VENDOR_DIR          := vendor/$(VENDOR)
 
-ARCH_MK             := $(VENDOR_DIR)/build/$(TARGET).mk
+ARCH_MK             := platform/bcm/build/bcm52.mk
 KCONFIG_TARGET      ?= $(VENDOR_DIR)/kconfig/targets/$(TARGET)
+-include $(VENDOR_DIR)/build/$(TARGET).mk
 
 endif # BCM_TEMPLATE_TARGETS

@@ -1,5 +1,5 @@
-#ifndef TARGET_OS_GATEWAY_BCM52_H_INCLUDED
-#define TARGET_OS_GATEWAY_BCM52_H_INCLUDED
+#ifndef TARGET_OS_EXTENDER_BCM52_H_INCLUDED
+#define TARGET_OS_EXTENDER_BCM52_H_INCLUDED
 
 #include "schema.h"
 
@@ -68,4 +68,4 @@ typedef void target_capacity_data_t;
 
 #include "target_common.h"
 
-#endif /* TARGET_OS_GATEWAY_BCM52_H_INCLUDED */
+#endif /* TARGET_OS_EXTENDER_BCM52_H_INCLUDED */
