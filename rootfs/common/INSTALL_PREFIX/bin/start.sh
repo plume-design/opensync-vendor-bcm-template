@@ -46,11 +46,8 @@ echo "Adding br-home with MAC address $MAC_BRHOME"
 ovs-vsctl add-br br-home
 ovs-vsctl set bridge br-home other-config:hwaddr="$MAC_BRHOME"
 ovs-ofctl add-flow br-home table=0,priority=50,dl_type=0x886c,actions=local
-
-echo "Adding br-home.l2uf1"
-ovs-vsctl add-port br-home br-home.l2uf1 -- set interface br-home.l2uf1 type=internal ofport_request=500
-ovs-ofctl add-flow br-home "table=0,priority=250,dl_dst=01:00:00:00:00:00/01:00:00:00:00:00,dl_type=0x05ff,actions=NORMAL,output:500"
-ifconfig br-home.l2uf1 up
+# Enable IGMP snooping + disable mcast flooding
+ovs-vsctl set bridge br-home mcast_snooping_enable=true
 
 # Configure ARPs
 echo 1 | tee /proc/sys/net/ipv4/conf/*/arp_ignore
@@ -95,3 +92,10 @@ ovsdb-client transact '
         "other_config": ["map", [["stats-update-interval", "3600000"] ]]
     }
 }]'
+
+# Set fc software deferral limit
+/bin/fcctl config --sw-defer 15
+# Set fc acceleration mode to L3
+/bin/fcctl config --accel-mode 0
+/bin/fcctl enable
+

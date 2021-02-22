@@ -11,6 +11,9 @@ start()
 {
     # System setup
     enable_ip_forward
+    if [ -e ${INSTALL_PREFIX}/bin/wifi.sh ]; then
+        ${INSTALL_PREFIX}/bin/wifi.sh 2>&1 | logger -t wifi.sh
+    fi
 
     # Start OpenSync
     ${INSTALL_PREFIX}/bin/start.sh 2>&1 | logger -t start.sh

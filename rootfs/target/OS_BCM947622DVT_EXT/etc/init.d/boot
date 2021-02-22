@@ -1,0 +1,32 @@
+#!/bin/sh
+START=26
+STOP=26
+
+case "$1" in
+    start)
+        cp -v /etc/shadow.orig /tmp/shadow
+        mount -o rw,remount /
+        mount -o rw,remount,size=25% /var
+        # iptables auto modprobe doesnt work
+        modprobe nf_conntrack_ipv4
+        modprobe nf_conntrack_ipv6
+        modprobe nf_nat_ipv4
+        modprobe nf_nat_ipv6
+        modprobe xt_state
+        modprobe xt_nat
+        find /lib/modules/`uname -r`/kernel/net | while read A; do
+            modprobe `basename $A`
+        done
+        # interacting with chatty uart is frustrating without this:
+        echo 1 > /proc/sys/kernel/printk
+        exit 0
+        ;;
+    stop)
+        exit 0
+        ;;
+    *)
+        echo "$0: $1: unrecognized action"
+        exit 1
+        ;;
+esac
+

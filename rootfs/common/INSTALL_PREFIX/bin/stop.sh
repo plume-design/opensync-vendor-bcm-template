@@ -14,6 +14,24 @@ gre_filter()
     }'
 }
 
+gre_stop()
+{
+    ip -d link show | gre_filter | while read IF
+    do
+        ip link set dev $IF down
+    done
+}
+
+wl_purge_qdiscs()
+{
+    ls /sys/class/net \
+    | grep '^wl.$' \
+    | xargs -n1 sh -xc '
+        wl -i $0 down
+        wl -i $0 up
+    '
+}
+
 gre_purge()
 {
     ip -d link show | gre_filter | while read IF
@@ -34,7 +52,7 @@ ${INSTALL_PREFIX}/bin/nol.sh save
 # nas and epad must be killed afterwards to
 # avoid races and unexpected driver sequences.
 echo "killing managers"
-killall -s SIGKILL dm cm nm wm lm sm bm um om qm fsm fcm
+killall -s SIGKILL dm cm nm wm lm sm bm um om qm fsm fcm pm nfm qosm wano
 
 # From this point on CM is dead and no one is kicking
 # watchdog.  There's less than 60s to complete everything
@@ -49,6 +67,15 @@ rm -f /tmp/.eapd_ping_supported
 echo "miniupnpd stop"
 
 # Purge all GRE tunnels
+#
+# Some network accelerators (e.g. flowcache) can be
+# left with dangling pointers to deleted netdevs
+# in sk_buffs causing kernel oopses.
+#
+# The following steps try to be careful to quiesce
+# tx queues more gently and avoid crashes.
+gre_stop  # no more packets can get to wlX after this
+wl_purge_qdiscs  # qdiscs on wlX should be empty after this
 gre_purge
 
 # Stop cloud connection
@@ -59,6 +86,11 @@ ovs-vsctl del-manager
 /etc/init.d/openvswitch stop
 echo "openvswitch stop"
 
+# It's fine to restart it instead of just stopping.
+# This will start global instances of hostapd/wpas
+# both of which are no-op until configured via wpa_cli.
+/etc/init.d/hostap restart
+
 # We don't want to leave stale wifi interfaces running
 # around. WM2 won't touch anything that isn't in Config
 # table so remove all extra vifs and put the primary
@@ -66,6 +98,8 @@ echo "openvswitch stop"
 for i in $(ls /sys/class/net/)
 do
     echo "$i" | grep "^wl" && {
+        ip addr flush dev $i
+        ip link set dev $i down
         wl -i $i bss down
         wl -i $i down
     }
@@ -98,6 +132,12 @@ killall udhcpc
 
 # Remove existing DHCP leases
 rm /tmp/dhcp.leases
+
+# Remove old wpa_ctrl sockets
+rm -f /tmp/wpa_ctrl_*
+
+# Kill PPP connections
+killall pppd
 
 # Reset DNS files
 rm -rf /tmp/dns

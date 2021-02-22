@@ -1,0 +1,28 @@
+#!/bin/sh -axe
+sdkdir=$1
+patches=0
+gzip=$(which pigz || which gzip)
+tar xOf "$SDK" "$SDK_DATA" -I $gzip | $gzip -d | tar x -C "$sdkdir/"
+tar xf "$WLAN" -I $gzip -C "$sdkdir/"
+tar xOf "$OVS" "$OVS_DATA" -I $gzip | $gzip -d | tar x -C "$sdkdir/"
+if test -e "$sdkdir"/archer*.tgz
+then
+    tar xf "$sdkdir"/archer*.tgz -C "$sdkdir/"
+fi
+find "$sdkdir/" -name firmware.tgz | xargs -n1 -r sh -c 'cd "$(dirname "$0")" && tar --skip-old-files -xf "$(basename "$0")" -I $gzip -C ..'
+( cd "$sdkdir/" && for i in BSP_*; do test -e $i || continue; patch -p2 < $i || exit 1; done )
+
+# wlan-all-src-17.10.121.37.cpe5.02L.07p1.tgz:
+( cd "$sdkdir/" && ( ! test -e apply_bsp_patch_all.sh || ./apply_bsp_patch_all.sh ) )
+( cd "$sdkdir/" && ( ! test -e rb164214.patch || patch -p1 < rb164214.patch ) )
+
+# pre-release drivers contain full git repos of some components (hostapd)
+# remove these to allow for git clean to work properly
+find "$sdkdir/" -name .git -exec rm -vrf '{}' ';' -prune
+
+# This is how a CSP provided patch can be applied:
+#
+# patches=$(expr $patches + 1)
+# tar xf dl/CS9426795_502L07_Officialpatch.tgz -C "$sdkdir"
+# ( cd "$sdkdir" && patch -p0 < CS9426795_502L07_Officialpatch.patch )
+# test $patches -eq $(grep csp:.*ref:.*chg: "$sdkdir"//patch.version | wc -l)

@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Additional nvram settings
+# Run in between S40hndnvram and S45bcm-wlan-drivers
+
+start()
+{
+    # wl0 channel mask
+    nvram set "pcie/1/1/dis_ch_grp=0x18"
+
+    # wl2 channel mask
+    nvram set "sb/1/dis_ch_grp=0x07"
+
+    # This setting limits the number of frames handed over to
+    # the DHD transmit queues and the flowrings in Tx direction.
+    nvram set "dhd_if_threshold=12000"
+}
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac
+
