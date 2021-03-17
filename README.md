@@ -15,9 +15,9 @@ reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 2.2.x    | public  |
-    | OpenSync vendor/bcm-template | 2.2.x    | public  |
-    | OpenSync platform/bcm        | 2.2.x    | public  |
+    | OpenSync core                | 2.4.x    | public  |
+    | OpenSync vendor/bcm-template | 2.4.x    | public  |
+    | OpenSync platform/bcm        | 2.4.x    | public  |
     | BCM SDK                      | 5.02L.07 | private |
 
 
