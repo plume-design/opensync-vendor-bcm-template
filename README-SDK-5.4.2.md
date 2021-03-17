@@ -4,8 +4,8 @@ OpenSync BCM Template
 Reference/template BCM vendor layer implementation provides support for reference
 BCM based targets.
 
-This vendor layer provides an example target implementations based on the same
-reference hardware (described below):
+This vendor layer provides an example target implementation based on the
+following reference hardware (described below):
 * `OS_BCM947622DVT_EXT` - gateway and extender mode
 
 #### Reference software versions
@@ -102,7 +102,7 @@ To integrate OpenSync into BCM SDK, follow the steps below:
 
 1. Prepare the BCM SDK and build env as instructed by BCM
 
-2. Apply opensync required patches and files
+2. Apply patches and files required by OpenSync
 
 ```
 cd $SDK_ROOT
@@ -218,8 +218,7 @@ cd $SDK_ROOT
     BACKHAUL_PASS=7eCyoqETHiJzKBBALPFP9X8mVy4dwCga
 ```
 
-7. This will patch the SDK and run the build
-The location of the patched SDK will be:
+7. This will patch the SDK and run the build. The location of the patched SDK will be:
 ```
 $SDK_ROOT/build-OS_BCM947622DVT_EXT-y/
 ```
@@ -232,8 +231,8 @@ Image install
 
 #### Full image reflash
 
-Note: when running bcm_flasher the /var fs needs free space in the size of the image,
-if the image is also stored there then the /var fs size needs to be double the size of the image.
+Note: when running bcm_flasher the `/var` fs needs free space in the size of the image,
+if the image is also stored there then the `/var` fs size needs to be double the size of the image.
 
 ```
 $ cd /tmp
