@@ -9,3 +9,15 @@ fi
 ROOTFS=$1
 
 echo "###### pre-install ${ROOTFS} #######"
+
+mkdir -p ${ROOTFS}/etc/dropbear
+DROPBEAR_HOST_KEY=${ROOTFS}/etc/dropbear/dropbear_rsa_host_key
+# remove old key and create a new one
+rm -rf ${DROPBEAR_HOST_KEY}
+dropbearkey -t rsa -f ${DROPBEAR_HOST_KEY} -s 2048 > /dev/null 2>&1 && chmod 600 "$DROPBEAR_HOST_KEY"
+echo "Generated SSH host key:" $(dropbearkey -y -f ${DROPBEAR_HOST_KEY} | grep Fingerprint)
+
+# On some systems dropbear startup scripts try to create the DSS host key, but
+# fail since dropbearkey doesn't support it. Create a dummy key for those cases.
+echo "disabled" > "${ROOTFS}/etc/dropbear/dropbear_dss_host_key"
+
