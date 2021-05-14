@@ -167,14 +167,14 @@ $ cd $SDK_ROOT/
 $ docker/dock-run make \
     OPENSYNC_SRC=$OPENSYNC_ROOT \
     PROFILE=OS_EXTENDER_BCM52 \
-    OS_ONBOARDING_PSK=7eCyoqETHiJzKBBALPFP9X8mVy4dwCga \
-    OS_ONBOARDING_SSID=opensync.onboard
+    BACKHAUL_PASS=7eCyoqETHiJzKBBALPFP9X8mVy4dwCga \
+    BACKHAUL_SSID=opensync.onboard
 ```
 
 The above commands build a full image. To build just the OpenSync package one
 can modify the build commands by adding: `-C userspace/opensync/apps/opensync`.
 
-Note the additional build-time variables: `OS_ONBOARDING_PSK` and `OS_ONBOARDING_SSID`.
+Note the additional build-time variables: `BACKHAUL_PASS` and `BACKHAUL_SSID`.
 See `Makefile` for details.
 
 
