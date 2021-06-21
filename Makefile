@@ -11,25 +11,25 @@ VENDOR_OVSDB_HOOKS := $(VENDOR_DIR)/ovsdb/common
 VENDOR_OVSDB_HOOKS += $(VENDOR_DIR)/ovsdb/$(TARGET)
 
 ##
-# Handle onboarding psk and ssid for OS_EXTENDER_BCM52 target during build.
+# Handle onboarding PSK and SSID for OS_EXTENDER_BCM52 target.
 #
-# Note that OS_ONBOARDING_PSK and OS_ONBOARDING_SSID variables are required
-# for generating pre-populated WiFi related OVSDB entries required by extender
-# devices. (See: ovsdb/OS_EXTENDER_BCM52/radio.json.sh)
+# BACKHAUL_PASS and BACKHAUL_SSID variables are required for generating the
+# pre-populated WiFi related OVSDB entries needed for extender devices.
+# (See also: ovsdb/OS_EXTENDER_BCM52/radio.json.sh)
 #
 ifeq ($(MAKECMDGOALS),)
 ifeq ($(TARGET),OS_EXTENDER_BCM52)
 
-ifeq ($(OS_ONBOARDING_PSK),)
-$(error TARGET=$(TARGET): Please provide OS_ONBOARDING_PSK)
+ifeq ($(BACKHAUL_PASS),)
+$(error TARGET=$(TARGET): Please provide BACKHAUL_PASS)
 endif
 
-ifeq ($(OS_ONBOARDING_SSID),)
-$(error TARGET=$(TARGET): Please provide OS_ONBOARDING_SSID)
+ifeq ($(BACKHAUL_SSID),)
+$(error TARGET=$(TARGET): Please provide BACKHAUL_SSID)
 endif
 
-export OS_ONBOARDING_PSK=$(OS_ONBOARDING_PSK)
-export OS_ONBOARDING_SSID=$(OS_ONBOARDING_SSID)
+export BACKHAUL_PASS=$(BACKHAUL_PASS)
+export BACKHAUL_SSID=$(BACKHAUL_SSID)
 
 endif
 endif
