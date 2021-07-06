@@ -42,10 +42,6 @@ RUN cd /usr/src \
     && make -j4 \
     && make install
 
-ADD ucw.tar.xz /usr/src/ucw
-RUN cd /usr/src/ucw && make install
-COPY hucw /usr/local/bin/hucw
-
 # Install kconfiglib required for menuconfig
 RUN pip3 install kconfiglib
 
@@ -73,10 +69,39 @@ ENV PATH="/projects/hnd/tools/linux/:${PATH}"
 
 #RUN $PKGINSTALL gcc-arm-none-eabi
 
+ENV GOPATH=/usr/src/local/go
+RUN $PKGINSTALL golang-1.10
+RUN /usr/lib/go-1.10/bin/go get -d -v github.com/git-lfs/git-lfs
+RUN git -C /usr/src/local/go/src/github.com/git-lfs/git-lfs checkout origin/release-2.7
+RUN /usr/lib/go-1.10/bin/go install -v github.com/git-lfs/git-lfs
+RUN ln -srf $GOPATH/bin/git-lfs /usr/local/bin
+
+# Additions for device-sdk-bcm-5.2-ax:
+RUN $PKGINSTALL cpio
+ADD crosstools-aarch64-gcc-5.5-linux-4.1-glibc-2.26-binutils-2.28.1.Rel1.10.tar.bz2 /
+
+# Addition for EMMC images
+RUN $PKGINSTALL gdisk
+RUN cd /projects && ln -sf hnd bca
+RUN $PKGINSTALL pigz
+
+# openssl host and platform target versions must match
+# for dhparams to be generated properly for openvswitch
+# package in the sdk
+WORKDIR /usr/src
+RUN wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_0g.tar.gz
+RUN md5sum OpenSSL*.tar.gz >> remote.md5
+COPY openssl.md5 local.md5
+RUN diff *.md5
+RUN tar xf OpenSSL* && cd openssl*/ && ./config --prefix=/usr && make -j $(nproc) && make -j $(nproc) install
+
 # Install cmake (for building odhcp6c)
 RUN $PKGINSTALL cmake
 
-RUN pip3 install Jinja2
+RUN pip3 install 'MarkupSafe<2.0.0' 'Jinja2<3.0.0'
+
+# Needed for the stam generator
+RUN eval $PKGINSTALL python3-pydot
 
 # Broadcom buildsystem requires bash as /bin/sh.
 # This must be last docker step to avoid confusing

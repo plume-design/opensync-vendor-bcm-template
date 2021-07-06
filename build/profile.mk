@@ -26,3 +26,6 @@ endif
 ifeq ($(CONTROLLER_ADDR),)
 $(error TARGET=$(TARGET): Please add IMAGE_DEPLOYMENT_PROFILE section for $(IMAGE_DEPLOYMENT_PROFILE))
 endif
+
+export CONTROLLER_ADDR
+

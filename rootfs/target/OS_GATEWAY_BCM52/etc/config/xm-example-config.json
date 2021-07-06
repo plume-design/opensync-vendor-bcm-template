@@ -4,7 +4,7 @@
   "mode": "cloud",
   "redirector": "ssl:wildfire-dualstack.plume.tech:443",
   "revision": "1.0",
-  "model": "PP302Z-GW",
+  "model": "BCM947189GW_GW",
   "version": "1.0"
  },
  "wifi": [

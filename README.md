@@ -8,6 +8,7 @@ This vendor layer provides two example target implementations based on the same
 reference hardware (described below):
 * `OS_GATEWAY_BCM52` - gateway mode only
 * `OS_EXTENDER_BCM52` - gateway and extender mode
+* `OS_BCM947622DVT_EXT` - gateway and extender mode
 
 #### Reference software versions
 
@@ -15,10 +16,11 @@ reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 3.0.x    | public  |
-    | OpenSync vendor/bcm-template | 3.0.x    | public  |
-    | OpenSync platform/bcm        | 3.0.x    | public  |
+    | OpenSync core                | 3.2.x    | public  |
+    | OpenSync vendor/bcm-template | 3.2.x    | public  |
+    | OpenSync platform/bcm        | 3.2.x    | public  |
     | BCM SDK                      | 5.02L.07 | private |
+    | BCM SDK                      | 5.04L.02 | private |
 
 
 #### Plume reference device information
@@ -39,7 +41,23 @@ reference hardware (described below):
     | wlX.3         | 2.4G and 5G onboard VAPs                          |
     | wlX           | 2.4G and 5G station interfaces (extender only)    |
 
-SW and HW information of Plume hardware is given for easier understanding of
+
+* Reference board: BCM96755REF1
+
+* Chipset: BCM6755
+
+* Interfaces:
+
+    | Interface     | Description                                       |
+    |---------------|---------------------------------------------------|
+    | eth0          | WAN ethernet interface                            |
+    | br-wan        | WAN bridge                                        |
+    | br-home       | LAN bridge                                        |
+    | wl0           | 5G (Lower) wireless phy interace                  |
+    | wl1           | 2.4G wireless phy interace                        |
+    | wl2           | 5G (Upper) wireless phy interace                  |
+
+SW and HW information is given for easier understanding of
 the target layer implementation.
 
 
@@ -97,6 +115,7 @@ environment variables (assuming location of sources is `~/projects`):
 ```
 export OPENSYNC_ROOT=~/projects/opensync
 export SDK_ROOT=~/projects/sdk/bcm-52
+export SDK_VER=5.02L.07
 ```
 
 
@@ -114,13 +133,13 @@ cd $OPENSYNC_ROOT
    `$SDK_ROOT/targets/` dir
 
 ```
-$ cp -fr vendor/bcm-template/bcm-sdk-config/OS_*_BCM52  $SDK_ROOT/targets/
+$ cp -fr vendor/bcm-template/bcm-sdk${SDK_VER}-build/targets/.  $SDK_ROOT/targets/
 ```
 
 3. Copy docker files to SDK root directory
 
 ```
-cp -fr vendor/bcm-template/docker $SDK_ROOT/
+cp -fr vendor/bcm-template/bcm-sdk${SDK_VER}-build/docker $SDK_ROOT/
 ```
 
 4. Unpack the OpenSync package and dependencies to `$SDK_ROOT/userspace` dir
