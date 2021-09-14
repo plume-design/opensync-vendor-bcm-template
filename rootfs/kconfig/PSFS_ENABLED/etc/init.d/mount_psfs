@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# NOTE:
+# This is provided as an example and will likely need to be
+# adjusted to specific device partitioning scheme
+# The below example will try to create additional ubi volumes (should work on SDK 5.4),
+# or will fallback to /data (on SDK 5.2)
+
+. /lib/opensync_functions.sh
+
+include_kconfig
+
+_PSFS_VOL_SIZE="8MiB"
+_PSFS_UBI_DEV="/dev/ubi0"
+
+_mount_ubi_psfs()
+{
+    local vol_name=$1
+    local mnt_dir=$2
+    if ! grep -q "\"$vol_name\"" /proc/mtd; then
+        if ! ubimkvol $_PSFS_UBI_DEV --name="$vol_name" --type=dynamic --size=$_PSFS_VOL_SIZE; then
+            echo "ERROR: cannot create ubi volume '$vol_name'"
+            return 1
+        fi
+    fi
+    echo "Mounting ubi:$vol_name $mnt_dir"
+    mkdir -p "$mnt_dir"
+    mount -t ubifs "ubi:$vol_name" "$mnt_dir"
+}
+
+_psfs_on_data()
+{
+    local vol_name=$1
+    local mnt_dir=$2
+    local data_vol="/data/$vol_name"
+    mkdir -p "$data_vol"
+    if [ "$data_vol" != "$mnt_dir" ]; then
+        ln -s "$data_vol" "$mnt_dir"
+    fi
+}
+
+_start_psfs()
+{
+    local vol_name=$1
+    local mnt_dir=$2
+    if ! _mount_ubi_psfs $vol_name $mnt_dir; then
+        echo "WARNING: error mounting ubi volume $vol_name, fallback to /data/$vol_name"
+        _psfs_on_data $vol_name $mnt_dir
+    fi
+}
+
+
+start()
+{
+    # Create the persistent storage volumes
+    # - psfs_data: persistent across reboots but removed on upgrade
+    _start_psfs "psfs_data" "$CONFIG_PSFS_DIR"
+    # - psfs_preserve: persistent across reboots and upgrades
+    _start_psfs "psfs_preserve" "$CONFIG_PSFS_PRESERVE_DIR"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+esac

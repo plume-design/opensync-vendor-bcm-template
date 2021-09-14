@@ -1,4 +1,6 @@
 @include "base_bcm6755"
+CONFIG_PSFS_DIR="/mnt/psfs_data"
+CONFIG_PSFS_PRESERVE_DIR="/mnt/psfs_preserve"
 CONFIG_TARGET_MODEL="BCM947622DVT"
 CONFIG_TARGET_NAME="947622ref1 11ax dev board"
 CONFIG_TARGET_PATH_LOG_STATE="/tmp/log-state.conf"
