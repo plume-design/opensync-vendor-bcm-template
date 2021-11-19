@@ -69,7 +69,7 @@ RUN $PKGINSTALL pigz
 # Install cmake (for building odhcp6c)
 RUN $PKGINSTALL cmake
 
-RUN pip3 install Jinja2
+RUN pip3 install 'MarkupSafe<2.0.0' 'Jinja2<3.0.0'
 
 # needed to access signing server
 RUN pip3 install requests
