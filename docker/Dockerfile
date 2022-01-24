@@ -76,7 +76,7 @@ ENV PATH="/projects/hnd/tools/linux/:${PATH}"
 # Install cmake (for building odhcp6c)
 RUN $PKGINSTALL cmake
 
-RUN pip3 install Jinja2
+RUN pip3 install 'MarkupSafe<2.0.0' 'Jinja2<3.0.0'
 
 # Broadcom buildsystem requires bash as /bin/sh.
 # This must be last docker step to avoid confusing
