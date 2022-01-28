@@ -16,9 +16,9 @@ reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 3.2.x    | public  |
-    | OpenSync vendor/bcm-template | 3.2.x    | public  |
-    | OpenSync platform/bcm        | 3.2.x    | public  |
+    | OpenSync core                | 3.4.x    | public  |
+    | OpenSync vendor/bcm-template | 3.4.x    | public  |
+    | OpenSync platform/bcm        | 3.4.x    | public  |
     | BCM SDK                      | 5.02L.07 | private |
     | BCM SDK                      | 5.04L.02 | private |
 
@@ -32,7 +32,6 @@ reference hardware (described below):
     | Interface     | Description                                       |
     |---------------|---------------------------------------------------|
     | eth0          | WAN ethernet interface                            |
-    | br-wan        | WAN bridge                                        |
     | br-home       | LAN bridge                                        |
     | wl0           | 5G wireless phy interace                          |
     | wl1           | 2.4G wireless phy interace                        |
@@ -51,7 +50,6 @@ reference hardware (described below):
     | Interface     | Description                                       |
     |---------------|---------------------------------------------------|
     | eth0          | WAN ethernet interface                            |
-    | br-wan        | WAN bridge                                        |
     | br-home       | LAN bridge                                        |
     | wl0           | 5G (Lower) wireless phy interace                  |
     | wl1           | 2.4G wireless phy interace                        |

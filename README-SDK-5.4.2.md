@@ -14,9 +14,9 @@ following reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 3.2.x    | public  |
-    | OpenSync vendor/bcm-template | 3.2.x    | public  |
-    | OpenSync platform/bcm        | 3.2.x    | public  |
+    | OpenSync core                | 3.4.x    | public  |
+    | OpenSync vendor/bcm-template | 3.4.x    | public  |
+    | OpenSync platform/bcm        | 3.4.x    | public  |
     | BCM SDK                      | 5.04L.02 | private |
 
 
@@ -31,7 +31,6 @@ following reference hardware (described below):
     | Interface     | Description                                       |
     |---------------|---------------------------------------------------|
     | eth0          | WAN ethernet interface                            |
-    | br-wan        | WAN bridge                                        |
     | br-home       | LAN bridge                                        |
     | wl0           | 5G (Lower) wireless phy interace                  |
     | wl1           | 2.4G wireless phy interace                        |
@@ -107,7 +106,7 @@ To integrate OpenSync into BCM SDK, follow the steps below:
 ```
 cd $SDK_ROOT
 mkdir contrib
-tar -C contrib -xvf opensync-3.2.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
+tar -C contrib -xvf opensync-3.4.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
 cp -a contrib/files/*/. .
 cp -a contrib/patches .
 find patches/public-opensync/ patches/partner-opensync/ -name series | xargs cat > series
@@ -118,7 +117,7 @@ quilt push -a
 
 ```
 mkdir dl
-tar -C dl -xvf opensync-3.2.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
+tar -C dl -xvf opensync-3.4.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
 ```
 or download them manually and place them in the dl folder
 
@@ -201,12 +200,12 @@ cp crosstools-arm-gcc-9.2-linux-4.19-glibc-2.30-binutils-2.32.Rel1.12.tar.bz2   
 ```
 4. Unpack patches in contrib
 ```
-tar -C $SDK_ROOT/contrib -xvf opensync-3.2.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
+tar -C $SDK_ROOT/contrib -xvf opensync-3.4.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
 ```
 
 5. Unpack archive of opensource packages to dl
 ```
-tar -C $SDK_ROOT/dl -xvf opensync-3.2.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
+tar -C $SDK_ROOT/dl -xvf opensync-3.4.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
 ```
 
 6. Run build with:
