@@ -37,15 +37,6 @@ mac_get()
 MAC_ETH0=$(mac_get eth0)
 MAC_BRHOME=$(mac_set_local_bit ${MAC_ETH0})
 
-echo "Adding br-wan with MAC address $MAC_ETH0"
-ovs-vsctl add-br br-wan
-ovs-vsctl set bridge br-wan other-config:hwaddr="$MAC_ETH0"
-ovs-vsctl set int br-wan mtu_request=1500
-
-# This is gateway example with one ethernet port,
-# so we add eth0 into br-wan where dhcpc is running
-ovs-vsctl add-port br-wan eth0
-
 echo "Adding br-home with MAC address $MAC_BRHOME"
 ovs-vsctl add-br br-home
 ovs-vsctl set bridge br-home other-config:hwaddr="$MAC_BRHOME"

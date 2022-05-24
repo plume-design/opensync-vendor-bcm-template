@@ -31,7 +31,6 @@ following reference hardware (described below):
     | Interface     | Description                                       |
     |---------------|---------------------------------------------------|
     | eth0          | WAN ethernet interface                            |
-    | br-wan        | WAN bridge                                        |
     | br-home       | LAN bridge                                        |
     | wl0           | 5G (Lower) wireless phy interace                  |
     | wl1           | 2.4G wireless phy interace                        |
