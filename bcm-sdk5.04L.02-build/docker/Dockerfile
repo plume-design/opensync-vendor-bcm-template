@@ -24,6 +24,7 @@ ADD crosstools-arm-gcc-9.2-linux-4.19-glibc-2.30-binutils-2.32.Rel1.12.tar.bz2 /
 ADD crosstools-aarch64-gcc-9.2-linux-4.19-glibc-2.30-binutils-2.32.Rel1.12.tar.bz2 /
 
 # Install kconfiglib required for menuconfig
+RUN pip3 install 'pip==20.3.4'
 RUN pip3 install kconfiglib
 
 # This toolchain is requried to build dongle code

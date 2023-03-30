@@ -43,6 +43,7 @@ RUN cd /usr/src \
     && make install
 
 # Install kconfiglib required for menuconfig
+RUN pip3 install 'pip==20.3.4'
 RUN pip3 install kconfiglib
 
 # This toolchain is required to build dongle code

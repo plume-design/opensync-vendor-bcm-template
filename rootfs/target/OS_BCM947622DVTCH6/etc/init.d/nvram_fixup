@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Additional nvram settings
+# Run in between S40hndnvram and S45bcm-wlan-drivers
+
+start()
+{
+    # BCM947622DVTCH6
+    # Normally dis_ch_grp would be tweaked here, but
+    # the 6e board doesn't need that.
+
+    # This setting limits the number of frames handed over to
+    # the DHD transmit queues and the flowrings in Tx direction.
+    nvram set "dhd_if_threshold=12000"
+}
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac
+

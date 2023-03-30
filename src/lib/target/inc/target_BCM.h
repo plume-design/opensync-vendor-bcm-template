@@ -8,9 +8,7 @@
 #include "wl80211_scan.h"
 #include "wl80211_survey.h"
 
-#define TARGET_CERT_PATH            "/var/certs"
 #define TARGET_MANAGERS_PID_PATH    "/var/run/plume"
-#define TARGET_OVSDB_SOCK_PATH      "/var/run/db.sock"
 #define TARGET_LOGREAD_FILENAME     "/var/log/messages"
 
 typedef wl80211_client_record_t target_client_record_t;

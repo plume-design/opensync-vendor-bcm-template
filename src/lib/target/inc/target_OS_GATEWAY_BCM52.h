@@ -14,9 +14,7 @@
 #define TARGET_ETHCLIENT_IFLIST     "eth0"
 
 
-#define TARGET_CERT_PATH            "/var/certs"
 #define TARGET_MANAGERS_PID_PATH    "/var/run/opensync"
-#define TARGET_OVSDB_SOCK_PATH      "/var/run/db.sock"
 #define TARGET_LOGREAD_FILENAME     "/var/log/messages"
 
 
