@@ -4,9 +4,9 @@ OpenSync BCM Template
 Reference/template BCM vendor layer implementation provides support for reference
 BCM based targets.
 
-This vendor layer provides an example target implementation based on the
-following reference hardware (described below):
-* `OS_BCM947622DVT_EXT` - gateway and extender mode
+This vendor layer provides an example target implementation for the following
+reference board (described below):
+* `OS_BCM947622DVT_BCM54` - gateway and extender mode
 
 #### Reference software versions
 
@@ -14,13 +14,13 @@ following reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 5.2.x    | public  |
-    | OpenSync vendor/bcm-template | 5.2.x    | public  |
-    | OpenSync platform/bcm        | 5.2.x    | public  |
+    | OpenSync core                | 5.4.x    | public  |
+    | OpenSync vendor/bcm-template | 5.4.x    | public  |
+    | OpenSync platform/bcm        | 5.4.x    | public  |
     | BCM SDK                      | 5.04L.02 | private |
 
 
-#### BCM reference device information
+#### Reference device information
 
 * Reference board: BCM96755REF1
 
@@ -106,7 +106,7 @@ To integrate OpenSync into BCM SDK, follow the steps below:
 ```
 cd $SDK_ROOT
 mkdir contrib
-tar -C contrib -xvf opensync-5.2.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
+tar -C contrib -xvf opensync-5.4.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
 cp -a contrib/files/*/. .
 cp -a contrib/patches .
 find patches/public-opensync/ patches/partner-opensync/ -name series | xargs cat > series
@@ -117,18 +117,18 @@ quilt push -a
 
 ```
 mkdir dl
-tar -C dl -xvf opensync-5.2.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
+tar -C dl -xvf opensync-5.4.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
 ```
 or download them manually and place them in the dl folder
 
 4. Copy target profiles from bcm-template:
 ```
-cp -a $OPENSYNC_ROOT/vendor/bcm-template/bcm-sdk542-build/targets/. $SDK_ROOT/targets/
+cp -a $OPENSYNC_ROOT/vendor/bcm-template/bcm-sdk5.04L.02-build/targets/. $SDK_ROOT/targets/
 ```
 
 5. Copy docker from bcm-template:
 ```
-cp -a $OPENSYNC_ROOT/vendor/bcm-template/bcm-sdk542-build/docker $SDK_ROOT/
+cp -a $OPENSYNC_ROOT/vendor/bcm-template/bcm-sdk5.04L.02-build/docker $SDK_ROOT/
 ```
 
 6. Add toolchain to docker
@@ -145,8 +145,8 @@ but may require some modifications.
 Build environment
 -----------------
 
-For build environment requirements see `bcm-sdk542-build/docker/Dockerfile`, which is used to
-create the build environment and run builds in a docker container.
+For build environment requirements see `bcm-sdk5.04L.02-build/docker/Dockerfile`,
+which is used to create the build environment and run builds in a docker container.
 
 Note that the Dockerfile is tailored for BCM SDK `5.04L.02` and may require some
 modifications in case some other BCM SDK version is used.
@@ -159,14 +159,13 @@ To build OpenSync package in BCM SDK using docker run the commands below.
 Variable `PROFILE` must be set to one of the defined targets, depending on
 which variant you wish to build.
 
-Target `OS_BCM947622DVT_EXT`:
+Target `OS_BCM947622DVT_BCM54`:
 
 ```
 $ cd $SDK_ROOT/
 $ docker/dock-run make \
-    PROFILE=OS_BCM947622DVT_EXT \
+    PROFILE=OS_BCM947622DVT_BCM54 \
     OPENSYNC_SRC=$OPENSYNC_ROOT \
-    OPENSYNC_TARGET=OS_BCM947622DVT_EXT \
     BACKHAUL_SSID=opensync.onboard \
     BACKHAUL_PASS=7eCyoqETHiJzKBBALPFP9X8mVy4dwCga
 ```
@@ -183,9 +182,9 @@ Alternative method of preparing, patching and building the SDK:
 Here SDK_ROOT should start as an empty directory
 Prepare the SDK dir following these steps:
 
-1. Copy bcm-sdk542-build from bcm-template:
+1. Copy bcm-sdk5.04L.02-build from bcm-template:
 ```
-cp -a $OPENSYNC_SRC/vendor/bcm-template/bcm-sdk542-build/. $SDK_ROOT/.
+cp -a $OPENSYNC_SRC/vendor/bcm-template/bcm-sdk5.04L.02-build/. $SDK_ROOT/.
 ```
 2. Add SDK packages as received from BCM to $SDK_ROOT/dl:
 ```
@@ -200,18 +199,19 @@ cp crosstools-arm-gcc-9.2-linux-4.19-glibc-2.30-binutils-2.32.Rel1.12.tar.bz2   
 ```
 4. Unpack patches in contrib
 ```
-tar -C $SDK_ROOT/contrib -xvf opensync-5.2.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
+tar -C $SDK_ROOT/contrib -xvf opensync-5.4.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
 ```
 
 5. Unpack archive of opensource packages to dl
 ```
-tar -C $SDK_ROOT/dl -xvf opensync-5.2.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
+tar -C $SDK_ROOT/dl -xvf opensync-5.4.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
 ```
 
 6. Run build with:
 ```
 cd $SDK_ROOT
-./docker/dock-run make build CONFIG=OS_BCM947622DVT_EXT \
+./docker/dock-run make build \
+    CONFIG=OS_BCM947622DVT_BCM54 \
     OPENSYNC_SRC=$OPENSYNC_ROOT \
     BACKHAUL_SSID=opensync.onboard \
     BACKHAUL_PASS=7eCyoqETHiJzKBBALPFP9X8mVy4dwCga
@@ -219,10 +219,8 @@ cd $SDK_ROOT
 
 7. This will patch the SDK and run the build. The location of the patched SDK will be:
 ```
-$SDK_ROOT/build-OS_BCM947622DVT_EXT-y/
+$SDK_ROOT/build-OS_BCM947622DVT_BCM54-y/
 ```
-The generated target profile directory is:
-$SDK_ROOT/build-OS_BCM947622DVT_EXT-y/947622GW+256SQUBI+BASESHELL+OPENSYNC+IMPL69
 
 
 Image install

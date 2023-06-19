@@ -4,11 +4,12 @@ OpenSync BCM Template
 Reference/template BCM vendor layer implementation provides support for reference
 BCM based targets.
 
-This vendor layer provides two example target implementations based on the same
-reference hardware (described below):
+This vendor layer provides example target implementations for the following
+reference boards:
 * `OS_GATEWAY_BCM52` - gateway mode only
 * `OS_EXTENDER_BCM52` - gateway and extender mode
 * `OS_BCM947622DVT_EXT` - gateway and extender mode
+* `OS_BCM947622DVTCH6` - gateway and extender mode
 
 #### Reference software versions
 
@@ -16,14 +17,13 @@ reference hardware (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 5.2.x    | public  |
-    | OpenSync vendor/bcm-template | 5.2.x    | public  |
-    | OpenSync platform/bcm        | 5.2.x    | public  |
+    | OpenSync core                | 5.4.x    | public  |
+    | OpenSync vendor/bcm-template | 5.4.x    | public  |
+    | OpenSync platform/bcm        | 5.4.x    | public  |
     | BCM SDK                      | 5.02L.07 | private |
-    | BCM SDK                      | 5.04L.02 | private |
 
 
-#### Plume reference device information
+#### Reference device information
 
 * Chipset: BCM47189
 
@@ -54,9 +54,6 @@ reference hardware (described below):
     | wl0           | 5G (Lower) wireless phy interace                  |
     | wl1           | 2.4G wireless phy interace                        |
     | wl2           | 5G (Upper) wireless phy interace                  |
-
-SW and HW information is given for easier understanding of
-the target layer implementation.
 
 
 OpenSync root dir
@@ -127,14 +124,13 @@ To integrate OpenSync into BCM SDK, follow the steps below:
 cd $OPENSYNC_ROOT
 ```
 
-2. Copy BCM SDK config files for `OS_GATEWAY_BCM52` and `OS_EXTENDER_BCM52` into
-   `$SDK_ROOT/targets/` dir
+2. Copy target configuration files from bcm-template to `$SDK_ROOT/targets/`
 
 ```
 $ cp -fr vendor/bcm-template/bcm-sdk${SDK_VER}-build/targets/.  $SDK_ROOT/targets/
 ```
 
-3. Copy docker files to SDK root directory
+3. Copy docker files from bcm-template to SDK
 
 ```
 cp -fr vendor/bcm-template/bcm-sdk${SDK_VER}-build/docker $SDK_ROOT/
@@ -143,7 +139,7 @@ cp -fr vendor/bcm-template/bcm-sdk${SDK_VER}-build/docker $SDK_ROOT/
 4. Unpack the OpenSync package and dependencies to `$SDK_ROOT/userspace` dir
 
 ```
-$ tar xzvf opensync-sdk-bcm52-*.tar.gz -C $SDK_ROOT/userspace
+$ tar xzvf opensync-5.4.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz -C $SDK_ROOT/userspace
 ```
 
 NOTE: Provided information is based on BCM SDK `5.02L.07`. In case you are
@@ -154,7 +150,7 @@ but may require some modifications.
 Build environment
 -----------------
 
-For build environment requirements see `docker/Dockerfile`, which is used to
+For build environment requirements see `bcm-sdk5.02L.07-build/docker/Dockerfile`, which is used to
 create the build environment and run builds in a docker container.
 
 Note that the Dockerfile is tailored for BCM SDK `5.02L.07` and may require some
@@ -168,22 +164,13 @@ To build OpenSync package in BCM SDK using docker run the commands below.
 Variable `PROFILE` must be set to one of the defined targets, depending on
 which variant you wish to build.
 
-Target `OS_GATEWAY_BCM52`:
+Target `OS_BCM947622DVT_EXT`:
 
 ```
 $ cd $SDK_ROOT/
 $ docker/dock-run make \
     OPENSYNC_SRC=$OPENSYNC_ROOT \
-    PROFILE=OS_GATEWAY_BCM52
-```
-
-Target `OS_EXTENDER_BCM52`:
-
-```
-$ cd $SDK_ROOT/
-$ docker/dock-run make \
-    OPENSYNC_SRC=$OPENSYNC_ROOT \
-    PROFILE=OS_EXTENDER_BCM52 \
+    PROFILE=OS_BCM947622DVT_EXT \
     BACKHAUL_PASS=7eCyoqETHiJzKBBALPFP9X8mVy4dwCga \
     BACKHAUL_SSID=opensync.onboard
 ```

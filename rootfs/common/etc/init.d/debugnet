@@ -1,30 +1,27 @@
-#!/bin/sh
+#!/bin/sh -e
 # {# jinja-parse #}
 INSTALL_PREFIX={{INSTALL_PREFIX}}
 
 START=60
 
-SERVICE_PID_FILE="/var/run/udhcpc.pid"
-
-NAME=debugnet
-
+PID_FILE_PREFIX=/var/run/udhcpc.pid
 INTERFACES="eth0"
 VLAN=4
+
+source "${INSTALL_PREFIX}/scripts/vlan.funcs.sh"
 
 start()
 {
     for IF in $INTERFACES
     do
-        # Skip non-existing interfaces
-        [ ! -e /sys/class/net/$IF ] && continue
+        test -e /sys/class/net/$IF || continue
+        VIF="$(vlan_ifname $IF $VLAN)"
+        vlan_add $IF $VLAN
 
-        VIF="${IF}.${VLAN}"
-        [ -d "/sys/class/net/$VIF" ] || vconfig add $IF $VLAN
-
-        # Bring-up interfaces
         ifconfig $IF up
         ifconfig $VIF up
-        start-stop-daemon -S -x /sbin/udhcpc -p $SERVICE_PID_FILE -b -m -- -s ${INSTALL_PREFIX}/bin/udhcpc.sh -f -S -i $VIF -C -o -O subnet
+        start-stop-daemon -K -x /sbin/udhcpc -p $PID_FILE_PREFIX.$VIF -t || \
+        start-stop-daemon -S -x /sbin/udhcpc -p $PID_FILE_PREFIX.$VIF -b -m -- -s ${INSTALL_PREFIX}/scripts/udhcpc.debugnet.sh -f -S -i $VIF -C -o -O subnet
     done
 }
 
@@ -32,29 +29,19 @@ stop()
 {
     for IF in $INTERFACES
     do
-        # Skip non-existing interfaces
-        [ ! -e /sys/class/net/$IF ] && continue
+        test -e /sys/class/net/$IF || continue
+        VIF="$(vlan_ifname $IF $VLAN)"
 
-        VIF="${IF}.${VLAN}"
-        start-stop-daemon -K -x /sbin/udhcpc -p $SERVICE_PID_FILE
-        [ -d "/sys/class/net/$VIF" ] && vconfig rem $VIF
+        ! start-stop-daemon -K -x /sbin/udhcpc -p $PID_FILE_PREFIX.$VIF -t || \
+        start-stop-daemon -K -x /sbin/udhcpc -p $PID_FILE_PREFIX.$VIF
+
+        vlan_del $IF $VLAN
     done
 }
 
-
 case "$1" in
-    start)
-        start
-        exit 0
-        ;;
-
-    stop)
-        stop
-        exit 0
-        ;;
-
-    *)
-        echo "$0: unrecognized option $1"
-        exit 1
-        ;;
+    boot) start ;;
+    start) start ;;
+    stop) stop ;;
+    *) exit 1 ;;
 esac

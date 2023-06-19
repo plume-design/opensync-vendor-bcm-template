@@ -112,11 +112,6 @@ bool osp_unit_mfg_date_get(char *buff, size_t buffsz)
     return false;
 }
 
-bool osp_unit_ovs_version_get(char *buff, size_t buffsz)
-{
-    return false;
-}
-
 bool osp_unit_dhcpc_hostname_get(void *buff, size_t buffsz)
 {
     char serial_num[100] = { 0 };
@@ -142,4 +137,3 @@ bool osp_unit_dhcpc_hostname_get(void *buff, size_t buffsz)
 
     return true;
 }
-

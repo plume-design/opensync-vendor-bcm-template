@@ -6,13 +6,14 @@
 # target implementations: OS_GATEWAY_BCM52 and OS_EXTENDER_BCM52.
 #
 BCM_TEMPLATE_TARGETS := OS_GATEWAY_BCM52 OS_EXTENDER_BCM52
-BCM_TEMPLATE_TARGETS += OS_BCM947622DVT_EXT OS_BCM947622DVTCH6
+BCM_TEMPLATE_TARGETS += OS_BCM947622DVT_EXT OS_BCM947622DVT_BCM54 OS_BCM947622DVTCH6
 
 OS_TARGETS          += $(BCM_TEMPLATE_TARGETS)
 
 ##
 # BCM template targets
 #
+
 ifneq ($(filter $(TARGET),$(BCM_TEMPLATE_TARGETS)),)
 
 PLATFORM            := bcm
@@ -23,5 +24,8 @@ VENDOR_DIR          := vendor/$(VENDOR)
 ARCH_MK             := platform/bcm/build/bcm52.mk
 KCONFIG_TARGET      ?= $(VENDOR_DIR)/kconfig/targets/$(TARGET)
 -include $(VENDOR_DIR)/build/$(TARGET).mk
+
+# add 3rdparty directories
+-include 3rdparty/*/build/build.mk
 
 endif # BCM_TEMPLATE_TARGETS
