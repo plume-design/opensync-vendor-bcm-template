@@ -34,8 +34,10 @@ start()
         /tmp/etc/openvswitch/conf.db
     ln -sf /var/run/db.sock /var/run/openvswitch/db.sock
 
+{%- if not CONFIG_TARGET_USE_NATIVE_BRIDGE %}
     # ovs-vswitchd
     start-stop-daemon -S -b -x /bin/ovs-vswitchd -- --pidfile
+{%- endif %}
 }
 
 
@@ -48,7 +50,10 @@ stop()
         ovs-vscdtl del-br $BR
     done
     start-stop-daemon -K -p "${OVSDB_SERVER_PID}"
+
+{%- if not CONFIG_TARGET_USE_NATIVE_BRIDGE %}
     start-stop-daemon -K -p "${OVS_VSWITCHD_PID}"
+{%- endif %}
 }
 
 

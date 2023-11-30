@@ -2,11 +2,9 @@
 # TARGET definitions
 #
 # NOTE: A single vendor repository may contain multiple targets,
-# which share some portions of code. This template contains two
-# target implementations: OS_GATEWAY_BCM52 and OS_EXTENDER_BCM52.
+# which share some portions of code.
 #
-BCM_TEMPLATE_TARGETS := OS_GATEWAY_BCM52 OS_EXTENDER_BCM52
-BCM_TEMPLATE_TARGETS += OS_BCM947622DVT_EXT OS_BCM947622DVT_BCM54 OS_BCM947622DVTCH6
+BCM_TEMPLATE_TARGETS := OS_BCM947622DVT_EXT OS_BCM947622DVT_BCM54 OS_BCM947622DVTCH6 OS_BCM94916REF2_BCM54
 
 OS_TARGETS          += $(BCM_TEMPLATE_TARGETS)
 
@@ -17,6 +15,15 @@ OS_TARGETS          += $(BCM_TEMPLATE_TARGETS)
 ifneq ($(filter $(TARGET),$(BCM_TEMPLATE_TARGETS)),)
 
 PLATFORM            := bcm
+
+# By default, search through all service-provider directories
+# starting with "local"
+SERVICE_PROVIDERS ?= local ALL
+
+# Default image deployment profile which must be defined in one of the cloned
+# service-provider directories. The "local" profile is found in the "local"
+# service provider repository.
+export IMAGE_DEPLOYMENT_PROFILE ?= local
 
 VENDOR              := bcm-template
 VENDOR_DIR          := vendor/$(VENDOR)
