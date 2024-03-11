@@ -15,9 +15,9 @@ reference board (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 5.6.x    | public  |
-    | OpenSync vendor/bcm-template | 5.6.x    | public  |
-    | OpenSync platform/bcm        | 5.6.x    | public  |
+    | OpenSync core                | 6.2.x    | public  |
+    | OpenSync vendor/bcm-template | 6.2.x    | public  |
+    | OpenSync platform/bcm        | 6.2.x    | public  |
     | BCM SDK                      | 5.02L.07 | private |
 
 #### Reference board information
@@ -123,7 +123,7 @@ cp -fr vendor/bcm-template/bcm-sdk${SDK_VER}-build/docker $SDK_ROOT/
 4. Unpack the OpenSync package and dependencies to `$SDK_ROOT/userspace` dir
 
 ```
-$ tar xzvf opensync-5.6.X.0-sdk-bcm-5.02L.07-patches-XX.tar.gz -C $SDK_ROOT/userspace
+$ tar xzvf opensync-6.2.X.0-sdk-bcm-5.02L.07-patches-XX.tar.gz -C $SDK_ROOT/userspace
 ```
 
 NOTE: Provided information is based on BCM SDK `5.02L.07`. In case you are

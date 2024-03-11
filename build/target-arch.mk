@@ -32,7 +32,5 @@ ARCH_MK             := platform/bcm/build/bcm52.mk
 KCONFIG_TARGET      ?= $(VENDOR_DIR)/kconfig/targets/$(TARGET)
 -include $(VENDOR_DIR)/build/$(TARGET).mk
 
-# add 3rdparty directories
--include 3rdparty/*/build/build.mk
 
 endif # BCM_TEMPLATE_TARGETS

@@ -14,9 +14,9 @@ reference board (described below):
 
     | Component                    | Version  |         |
     |------------------------------|----------|---------|
-    | OpenSync core                | 5.6.x    | public  |
-    | OpenSync vendor/bcm-template | 5.6.x    | public  |
-    | OpenSync platform/bcm        | 5.6.x    | public  |
+    | OpenSync core                | 6.2.x    | public  |
+    | OpenSync vendor/bcm-template | 6.2.x    | public  |
+    | OpenSync platform/bcm        | 6.2.x    | public  |
     | BCM SDK                      | 5.04L.02 | private |
 
 #### Reference board information
@@ -106,7 +106,7 @@ To integrate OpenSync into BCM SDK, follow the steps below:
 ```
 cd $SDK_ROOT
 mkdir contrib
-tar -C contrib -xvf opensync-5.6.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
+tar -C contrib -xvf opensync-6.2.X.0-sdk-bcm-5.04L.02-patches-XX.tar.gz
 cp -a contrib/files/*/. .
 cp -a contrib/patches .
 find patches/public-opensync/ patches/partner-opensync/ -name series | xargs cat > series
@@ -117,7 +117,7 @@ quilt push -a
 
 ```
 mkdir dl
-tar -C dl -xvf opensync-5.6.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
+tar -C dl -xvf opensync-6.2.X.0-sdk-bcm-5.04L.02-dl-XX.tar.gz
 ```
 or download them manually and place them in the dl folder
 

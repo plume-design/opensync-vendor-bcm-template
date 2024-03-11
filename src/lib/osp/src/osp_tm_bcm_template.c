@@ -1,19 +1,7 @@
 #include "log.h"
 #include "const.h"
 #include "osp_tm.h"
-
-
-static const char *pm_tm_temp_srcs[] =
-{
-    "wl0",
-    "wl1",
-};
-
-static const struct osp_tm_therm_state pm_tm_therm_tbl[] =
-{
-    {{ 0,  0  }, { 15, 3 }, 0 },
-    {{ 85, 85 }, { 3,  1 }, 5500 }
-};
+#include "osp_temp.h"
 
 
 int osp_tm_init(
@@ -24,9 +12,9 @@ int osp_tm_init(
 {
     LOGN("osp_tm: Dummy implementation of %s", __func__);
 
-    *tbl = pm_tm_therm_tbl;
-    *therm_state_cnt = ARRAY_SIZE(pm_tm_therm_tbl);
-    *temp_src_cnt = ARRAY_SIZE(pm_tm_temp_srcs);
+    *tbl = osp_tm_get_therm_tbl();
+    *therm_state_cnt = osp_tm_get_therm_states_cnt();
+    *temp_src_cnt = osp_temp_get_srcs_cnt();
     *priv = NULL;
 
     return 0;
@@ -35,18 +23,6 @@ int osp_tm_init(
 void osp_tm_deinit(void *priv)
 {
     LOGN("osp_tm: Dummy implementation of %s", __func__);
-}
-
-const char* osp_tm_get_temp_src_name(void *priv, int idx)
-{
-    LOGN("osp_tm: Dummy implementation of %s", __func__);
-    return "foo";
-}
-
-int osp_tm_get_temperature(void *priv, int idx, int *temp)
-{
-    LOGN("osp_tm: Dummy implementation of %s", __func__);
-    return 0;
 }
 
 int osp_tm_get_fan_rpm(void *priv, unsigned int *rpm)

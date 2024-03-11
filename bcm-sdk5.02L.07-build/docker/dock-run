@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 myname=$(basename $0)
 
 TAG=${DOCKER_TAG:-$(dirname "$(readlink -f "$0")" | tr / - | cut -b2- | tr A-Z a-z)}

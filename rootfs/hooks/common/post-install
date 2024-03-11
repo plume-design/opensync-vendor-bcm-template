@@ -32,6 +32,9 @@ ln -sf ../init.d/dropbear ${ROOTFS}/etc/rc3.d/S51dropbear
 ln -sf ../init.d/firewall ${ROOTFS}/etc/rc3.d/S60firewall
 ln -sf ../init.d/fan ${ROOTFS}/etc/rc3.d/S60fan
 ln -sf ../init.d/bcreset ${ROOTFS}/etc/rc3.d/S962bcreset
+ln -sf ../init.d/wpd ${ROOTFS}/etc/rc3.d/S29wpd
+# remove wdtd.sh from bcm5.4.2 since using opensync wpd
+rm ${ROOTFS}/etc/rc3.d/S26wdtd
 
 ##
 # BCM
