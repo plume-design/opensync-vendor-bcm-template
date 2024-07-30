@@ -18,11 +18,12 @@ mkdir -p ${ROOTFS}/root
 ##
 # Version
 #
-ln -sf "${INSTALL_PREFIX:1}/.version" "${ROOTFS}/.version"
+cp -a "${ROOTFS}/${INSTALL_PREFIX}"/.version* "${ROOTFS}"
 
 ##
 # System services
 #
+ln -sf ../init.d/mount_overlay ${ROOTFS}/etc/rc3.d/S260mount_overlay
 ln -sf ../init.d/boot ${ROOTFS}/etc/rc3.d/S26boot
 ln -sf ../init.d/boot ${ROOTFS}/etc/rc3.d/K26boot
 ln -sf ../init.d/syslogd ${ROOTFS}/etc/rc3.d/S28syslogd
@@ -30,11 +31,12 @@ ln -sf ../init.d/htpdate ${ROOTFS}/etc/rc3.d/S49htpdate
 ln -sf ../init.d/debugnet ${ROOTFS}/etc/rc3.d/S50debugnet
 ln -sf ../init.d/dropbear ${ROOTFS}/etc/rc3.d/S51dropbear
 ln -sf ../init.d/firewall ${ROOTFS}/etc/rc3.d/S60firewall
-ln -sf ../init.d/fan ${ROOTFS}/etc/rc3.d/S60fan
-ln -sf ../init.d/bcreset ${ROOTFS}/etc/rc3.d/S962bcreset
-ln -sf ../init.d/wpd ${ROOTFS}/etc/rc3.d/S29wpd
-# remove wdtd.sh from bcm5.4.2 since using opensync wpd
-rm ${ROOTFS}/etc/rc3.d/S26wdtd
+
+if [ "$CONFIG_WPD_ENABLED" = "y" ]; then
+    ln -sf ../init.d/wpd ${ROOTFS}/etc/rc3.d/S29wpd
+    # remove wdtd.sh from bcm5.4.2 if using opensync wpd
+    rm ${ROOTFS}/etc/rc3.d/S26wdtd
+fi
 
 ##
 # BCM

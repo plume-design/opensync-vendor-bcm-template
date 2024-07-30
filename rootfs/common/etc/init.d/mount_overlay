@@ -1,0 +1,18 @@
+#!/bin/sh -e
+# {# jinja-parse #}
+INSTALL_PREFIX={{INSTALL_PREFIX}}
+
+START=260
+
+. /lib/opensync_functions.sh
+
+start()
+{
+    mount_overlay
+}
+
+case "$1" in
+    boot) start ;;
+    start) start ;;
+    *) exit 1 ;;
+esac

@@ -21,3 +21,5 @@ echo "Generated SSH host key:" $(dropbearkey -y -f ${DROPBEAR_HOST_KEY} | grep F
 # fail since dropbearkey doesn't support it. Create a dummy key for those cases.
 echo "disabled" > "${ROOTFS}/etc/dropbear/dropbear_dss_host_key"
 
+# set hostname
+ln -sf ../init.d/hostname ${ROOTFS}/etc/rc3.d/S48hostname

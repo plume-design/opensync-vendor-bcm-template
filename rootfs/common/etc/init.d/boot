@@ -4,7 +4,6 @@ STOP=26
 
 case "$1" in
     start)
-        cp -v /etc/shadow.orig /tmp/shadow
         mount -o rw,remount /
         mount -o rw,remount,size=25% /var
         # iptables auto modprobe doesnt work
@@ -29,4 +28,3 @@ case "$1" in
         exit 1
         ;;
 esac
-
