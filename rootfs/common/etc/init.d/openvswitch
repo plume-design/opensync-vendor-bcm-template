@@ -1,59 +1,69 @@
 #!/bin/sh
 # {# jinja-parse #}
-
 INSTALL_PREFIX={{INSTALL_PREFIX}}
+
+# Use the default PID file
 OVSDB_SERVER_PID="/var/run/openvswitch/ovsdb-server.pid"
-OVS_VSWITCHD_PID="/var/run/openvswitch/ovs-vswitchd.pid"
 
-start()
+OVSDB_ORIG=${INSTALL_PREFIX}/etc/conf.db.bck
+OVSDB_ORIG_Z=$OVSDB_ORIG.z
+OVSDB_WORK_DIR=/tmp/etc/openvswitch
+OVSDB_WORK_COPY=$OVSDB_WORK_DIR/conf.db
+OVSDB_WORK_COPY_GZ=$OVSDB_WORK_COPY.gz
+OVSDB_RUN_DIR=/var/run/openvswitch
+
+insmods()
 {
-    echo "Starting openvswitch ..."
-
-    [ -x /var/run/openvswitch ] || mkdir -p /var/run/openvswitch
-
-    # create ramdisk folder for non-persistent ovsdb DB
-    [ -x /tmp/etc/openvswitch ] || mkdir -p /tmp/etc/openvswitch
-
-    # insert ovs kernel module
+    # insert ovs kernel modules
     modprobe nf_nat_ipv4
     modprobe nf_nat_ipv6
     insmod /opt/modules/openvswitch/openvswitch.ko
+}
 
-    # copy pre-populated db conf.db to ramdisk
-    cp ${INSTALL_PREFIX}/etc/conf.db.bck /tmp/etc/openvswitch/conf.db
+start()
+{
+    logger "$0: Starting openvswitch ..."
+
+    [ -x "$OVSDB_RUN_DIR" ] || mkdir -p "$OVSDB_RUN_DIR"
+
+    # create a ramdisk folder for non-persistent OVSDB database
+    [ -x "$OVSDB_WORK_DIR" ] || mkdir -p "$OVSDB_WORK_DIR"
+
+    # insert all kernel modules if needed
+    [ "$(lsmod | grep -c 'openvswitch')" -ne 0 ] || insmods
+
+    if [ -e "$OVSDB_ORIG_Z" ];
+    then
+        # decompress the compressed OVSDB file
+        ${INSTALL_PREFIX}/bin/ovsdb-inflate < "$OVSDB_ORIG_Z" > "$OVSDB_WORK_COPY_GZ"
+        gzip -dc "$OVSDB_WORK_COPY_GZ" > "$OVSDB_WORK_COPY"
+        rm -f "$OVSDB_WORK_COPY_GZ"
+    else
+        # copy the pre-populated db conf.db to ramdisk
+        cp "$OVSDB_ORIG" "$OVSDB_WORK_COPY"
+    fi
 
     # ovsdb-server start against non-persistent DB
-    # Use the default PID file otherwise we break commands such as ovs-appctl
     start-stop-daemon -S -b -x /bin/ovsdb-server -- \
         --remote=punix:/var/run/db.sock \
         --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
         --private-key=db:Open_vSwitch,SSL,private_key \
         --certificate=db:Open_vSwitch,SSL,certificate \
         --ca-cert=db:Open_vSwitch,SSL,ca_cert \
-        --pidfile \
-        /tmp/etc/openvswitch/conf.db
-    ln -sf /var/run/db.sock /var/run/openvswitch/db.sock
+        --pidfile="$OVSDB_SERVER_PID" \
+        "$OVSDB_WORK_COPY"
 
-{%- if not CONFIG_TARGET_USE_NATIVE_BRIDGE %}
-    # ovs-vswitchd
-    start-stop-daemon -S -b -x /bin/ovs-vswitchd -- --pidfile
-{%- endif %}
+    ln -sf /var/run/db.sock $OVSDB_RUN_DIR/db.sock
 }
 
 
 stop()
 {
-    echo "Stopping openvswitch ..."
+    logger "$0: Stopping openvswitch ..."
 
-    for BR in $(ovs-vsctl list-br)
-    do
-        ovs-vscdtl del-br $BR
-    done
     start-stop-daemon -K -p "${OVSDB_SERVER_PID}"
 
-{%- if not CONFIG_TARGET_USE_NATIVE_BRIDGE %}
-    start-stop-daemon -K -p "${OVS_VSWITCHD_PID}"
-{%- endif %}
+    rm -rf $OVSDB_RUN_DIR/db.sock
 }
 
 
@@ -68,8 +78,13 @@ case "$1" in
         exit 0
         ;;
 
+    restart)
+        stop
+        start
+        exit 0
+        ;;
     *)
-        echo "$0: unrecognized option $1"
+        logger "$0: unrecognized option $1"
         exit 1
         ;;
 esac

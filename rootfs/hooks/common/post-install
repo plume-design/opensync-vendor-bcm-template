@@ -48,3 +48,4 @@ ln -sf ../init.d/bcm_perf_boost ${ROOTFS}/etc/rc3.d/S48bcm_perf_boost
 #
 ln -sf ../init.d/openvswitch ${ROOTFS}/etc/rc3.d/S90openvswitch
 ln -sf ../init.d/opensync ${ROOTFS}/etc/rc3.d/S99opensync
+ln -sf ../init.d/healthcheck ${ROOTFS}/etc/rc3.d/S99healthcheck
