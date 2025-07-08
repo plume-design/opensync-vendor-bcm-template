@@ -52,9 +52,7 @@ _start_psfs()
 
 start()
 {
-    # Create the persistent storage volumes
-    # - psfs_data: persistent across reboots but removed on upgrade
-    _start_psfs "psfs_data" "$CONFIG_PSFS_DIR"
+    # Create the persistent storage volume
     # - psfs_preserve: persistent across reboots and upgrades
     _start_psfs "psfs_preserve" "$CONFIG_PSFS_PRESERVE_DIR"
 }

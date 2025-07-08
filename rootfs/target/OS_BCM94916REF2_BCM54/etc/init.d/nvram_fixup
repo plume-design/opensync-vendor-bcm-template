@@ -16,6 +16,13 @@ start()
    # "1 0 2" ("wl0=1 wl1=0 wl2=2") which means wl1 is Main Link
    # wl2 is the Aux1 link and wl2 is the Aux2 link
    nvram kset wl_mlo_config="1 0 2 -1"
+
+   # Values are the vap indices for which MLO will be
+   # disabled by configuring mld_unit as 255.
+   # All vaps with 1 and 3 will have MLO disabled.
+   # wl1.1, wl0.1, wl2.1, wl1.3, wl0.3, wl2.3 will have
+   # mlo disabled.
+   nvram kset wl_mlo_enable_vap_index="2 6"
    nvram kcommit
 }
 
