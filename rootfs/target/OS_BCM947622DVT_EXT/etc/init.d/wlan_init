@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Additional wl settings
+# Run after S45bcm-wlan-drivers
+
+start()
+{
+    # set wl0 channel filter
+    wl -i wl0 dis_ch_grp_user 0x18
+}
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac

@@ -17,7 +17,7 @@ case "$1" in
         ;;
 
     stop)
-        echo "Stopping firewall not implemented ..."
+        echo "Stopping os_firewall not implemented ..."
         exit 1
         ;;
 

@@ -1,176 +1,134 @@
 #!/bin/sh
 
-# These funcitons provide the functionality of a writable overlay filesystem
-# on top of a read-only filesystem which is usually a squashfs image.
+# These functions provide the functionality of a writable overlay filesystem
+# on top of a read-only filesystem, which is usually a squashfs image.
 # This can also be used for the in place upgrade functionality.
 
-# {# jinja-parse #}
-INSTALL_PREFIX={{INSTALL_PREFIX}}
+# Determine the flash type based on the root device
+# Outputs "eMMC" or "NAND" on success, nothing on failure.
+get_flash_type()
+(
+    root_dev=$(sed -e 's/^.*root=//' -e 's/ .*$//' /proc/cmdline) || return 1
+    case "$root_dev" in
+        "/dev/mmcblk"*)   echo "eMMC" ;;
+        "/dev/ubiblock"*) echo "NAND" ;;
+        "ubi:"*)          echo "NAND" ;;
+        *)
+            echo "Unable to determine flash type from root device '$root_dev'" >&2
+            return 1
+            ;;
+    esac
+)
 
+# Determine the MTD partition layout version
+# Outputs "1" (legacy) or "2" (new) on success, nothing on failure.
+get_mtd_layout_version()
+(
+    # From SDK 5.4.2, there are only two mtd partitions: loader and image,
+    # ubi0 is attached to image (mtd2) and mount all ubi volumes under ubi0.
+    image_mtd=$(get_part_mtd image) || return 1
+    if [ "${image_mtd}" = "mtd2" ]; then
+        echo 2
+    else
+        echo 1
+    fi
+)
+
+# Determine the active boot partition ID
+# Outputs "1" or "2" on success, nothing on failure.
 get_active_partition_id()
-{
-    local id=
-    local img=$(bcm_bootstate | grep -m 1 "Booted Partition:" | sed -r 's/^\s+Booted Partition:\s+(.*)$/\1/')
+(
+    img=$(bcm_bootstate | grep "Booted Partition:" | sed -r 's/^\s+Booted Partition:\s+(.*)$/\1/') || return 1
 
     if [ "$img" = "First" ]; then
-        id=1
+        echo 1
     elif [ "$img" = "Second" ]; then
-        id=2
-    fi
-
-    echo "$id"
-}
-
-get_part_mtd()
-{
-    cat /proc/mtd | grep '"'$1'"' | cut -d':' -f1
-}
-
-get_ubi_dev()
-{
-    local MTD=${1}
-    MTD=${MTD/mtd/}; # replace "mtd" with nothing
-
-    local UBI=`grep -l -w $MTD /sys/class/ubi/*/mtd_num`
-    UBI=${UBI/\/mtd_num/}; # remove "/mtd_num" from the path
-    UBI=${UBI/\/sys\/class\/ubi\//}; # remove "/sys/class/ubi/" from the path
-    local DEV=/dev/$UBI # mdev should already populate the new device node for ubi in /dev.
-
-    echo "${DEV}"
-}
-
-ubifs_mkvol()
-{
-    # param1: MTD name (example: "common")
-    # param2: UBIFS subvolume name (example: "common_config")
-    # param3: UBIFS subvolume size (example: "1MiB")
-
-    local MTD_NAME=${1}
-    local VOL_NAME=${2}
-    local VOL_SIZE=${3}
-
-    local MTD=$(get_part_mtd $MTD_NAME)
-    local UBIDEV=$(get_ubi_dev $MTD)
-
-    logger "Creating UBIFS subvolume $VOL_NAME"
-    ubimkvol $UBIDEV --name=$VOL_NAME --type=dynamic --size=$VOL_SIZE > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        logger "ERROR: Creating UBIFS subvolume $VOL_NAME failed"
+        echo 2
+    else
+        echo "Unable to determine active partition ID" >&2
         return 1
     fi
+)
 
-    return 0
-}
+# Retrieve the partition number for a given MTD partition name
+get_part_mtd()
+(
+    grep '"'$1'"' /proc/mtd | cut -d':' -f1
+)
 
-ubifs_vol_exists()
-{
-    # param1: MTD name (example: "common")
-    # param2: UBIFS subvolume name (example: "common_config")
-
-    local MTD_NAME=${1}
-    local VOL_NAME=${2}
-
-    local MTD=$(get_part_mtd $MTD_NAME)
-    local UBIDEV=$(get_ubi_dev $MTD)
-
-    local UBINUM=${UBIDEV/\/dev\//}
-    for name in $(cat /sys/class/ubi/${UBINUM}_*/name);
-    do
-        if [ "$name" == "$VOL_NAME" ]; then
-            return 0
-        fi
-    done
-
-    return 1
-}
-
+# Move all mount points to a new destination
 util_move_mounts()
-{
-    local DEST="$1"
-    local MOUNTS=$(cut -d' ' -f2 /proc/mounts)
-    local MNT
-    # filter out '/' '$DEST' and '$DEST/*'
-    MOUNTS=$(echo "$MOUNTS" | grep -v "^/$\|^${DEST}$\|^${DEST}/")
-    # filter out sub-mounts because they are moved along with upper
-    # mount points (eg. /dev/pts is moved together with /dev)
-    for MNT in $MOUNTS; do
-        MOUNTS=$(echo "$MOUNTS" | grep -v "^$MNT/.\+")
+(
+    dest="$1"
+    # Get all mount points except the root mount point, the destination, all already under
+    # destination, and the /proc mount point which shall be moved last as "mount" requires it.
+    mounts=$(cut -d' ' -f2 /proc/mounts | sort | grep -v "^/$\|^$dest$\|^$dest/.*$\|^/proc$")
+    mounts="$mounts /proc"
+    # Filter out sub-mounts because they are moved together with parent
+    # mount points (e.g., /dev/pts is moved together with /dev).
+    for mnt in $mounts; do
+        mounts=$(echo "$mounts" | grep -v "^$mnt/.\+")
     done
-    for MNT in $MOUNTS; do
-        mkdir -p $DEST$MNT
-        mount --move $MNT $DEST$MNT
-    done
-}
-
-util_move_and_pivot_root()
-{
-    local DEST="$1"
-    local PUT_OLD="$2"
-    util_move_mounts "$DEST"
-    mkdir -p "$PUT_OLD"
-    pivot_root "$DEST" "$PUT_OLD"
-}
-
-create_overlay_partition()
-{
-    local MTD_NAME="$1"
-    local OVERLAY_NAME="$2"
-    local OVERLAY_SIZE="100MiB"
-
-    if ! ubifs_vol_exists $MTD_NAME $OVERLAY_NAME ; then
-        echo "ubifs_mkvol $MTD_NAME $OVERLAY_NAME $OVERLAY_SIZE"
-        if ! ubifs_mkvol $MTD_NAME $OVERLAY_NAME $OVERLAY_SIZE ; then
-            return 1
+    # Move mount points to the new destination
+    for mnt in $mounts; do
+        if mountpoint -q "$mnt"; then
+            mkdir -p "$dest$mnt"
+            mount --move "$mnt" "$dest$mnt"
         fi
-    fi
-}
+    done
+)
 
 mount_overlay_partition()
-{
-    img_id=$(get_active_partition_id)
-    if [ -z "$img_id" ]; then
-        echo "unknown active partition" >&2
-        return 1
-    fi
-    local MTD_NAME="image"
-    local OVERLAY_NAME="rootfs_overlay${img_id}"
+(
+    flash_type="$(get_flash_type)" || return 1
+    if [ "$flash_type" = "NAND" ]; then
+        part_ver=$(get_mtd_layout_version) || return 1
+        if [ "${part_ver}" = "1" ]; then
+            overlay_name=rootfs_overlay
+        elif [ "${part_ver}" = "2" ]; then
+            # From SDK5.4.2, search the id for current rootfs overlay
+            part_id=$(get_active_partition_id) || return 1
+            overlay_name=rootfs${part_id}_overlay
+        else
+            echo "Unknown partition version '$part_ver'" >&2
+            return 1
+        fi
 
-    if ! create_overlay_partition $MTD_NAME $OVERLAY_NAME ; then
+        mount -t ubifs "ubi:${overlay_name}" /overlay || {
+            echo "Unable to mount overlay filesystem 'ubi:${overlay_name}'"
+            return 1
+        }
+    else
+        echo "Unsupported flash type '$flash_type'"
         return 1
     fi
-
-    if ! mount -t ubifs ubi:${OVERLAY_NAME} /overlay ; then
-        echo "Error mounting overlay filesystem 'ubi:${OVERLAY_NAME}'"
-        return 1
-    fi
-}
+)
 
 mount_overlay_filesystem()
-{
+(
     echo "Mounting overlay filesystem"
 
     mkdir -p /overlay/upper
     mkdir -p /overlay/work
 
-    # use LAYERS if provided as arg or use default '/'
-    local LAYERS="${1:-/}"
+    mount -t overlay overlay -o lowerdir=/,upperdir=/overlay/upper,workdir=/overlay/work /overlay || return 1
 
-    if ! mount -t overlay overlay -o lowerdir=$LAYERS,upperdir=/overlay/upper,workdir=/overlay/work /overlay ; then
-        echo "Error mounting overlayfs layer"
-        return 1
-    fi
+    # Move mount points to the overlay
+    util_move_mounts /overlay
 
     # Switch to new root filesystem
-    util_move_and_pivot_root /overlay /overlay/rom
+    echo "Pivoting overlay root"
+    mkdir -p /overlay/rom
+    pivot_root /overlay /overlay/rom
 
-    # move overlay volume to /overlay to use same layout as openwrt
+    # Move overlay volume to /overlay to use the same layout as openwrt
     mount --move /rom/overlay /overlay
 
     echo "Done mounting overlay filesystem"
-}
+)
 
 mount_overlay()
-{
+(
     if grep ' / overlay ' /proc/mounts ; then
         # overlay can already be mounted by preinit
         echo "Overlay mounted"
@@ -182,5 +140,4 @@ mount_overlay()
     fi
 
     mount_overlay_filesystem
-}
-
+)

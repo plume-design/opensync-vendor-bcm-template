@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# nvram config if mlo is enabled
+# Need to run before wifi driver is loaded
+# which is loaded by S99opensync.
+
+start()
+{
+   # Enable MLO by default
+   # These numbers represent order of radios as per indices.
+   # First value refers to wl0. Second to wl1, etc.
+   # 0 means "primary radio for MLO", 1 means "secondary", etc.
+   # 0 is expected to be assigned to the radios that has the
+   # highest transport throughput, eg. 6GHz on PCI (refer to BCM
+   # recommendentation if unsure). Assuming wl0=5G, wl1=6G, wl2=2.4G,
+   # "1 0 2" ("wl0=1 wl1=0 wl2=2") which means wl1 is Main Link
+   # wl0 is the Aux1 link and wl2 is the Aux2 link
+   nvram kset wl_mlo_config="1 0 2 -1"
+
+   # Values are the vap indices for which MLO will be
+   # enabled by configuring mld_unit > 0 to < 255.
+   # eg: for the below config wl0.2, wl1.2 and wl2.2
+   # will have mlo enabled with mld_unit = 2.
+   # 0 refers to the primary wl interface. (wl0, wl1, etc)
+   nvram kset wl_mlo_enable_vap_index="1 2 3 6"
+   nvram kcommit
+}
+
+case "$1" in
+    start)
+        start
+        exit 0
+        ;;
+
+    *)
+        echo "$0: unrecognized option $1"
+        exit 1
+        ;;
+esac
